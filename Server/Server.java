@@ -47,13 +47,17 @@ public class Server {
         User user = it.next();
         try{
           int x=user.in.readInt();
-          if(x==0) continue;
+          if(x==0) {
+            user.sendStatus();
+            continue;
+          }
           if(x==-1){
             int roomKey = createRoom();
             if(roomKey==-1){
               System.err.println("fail to create room");
               continue;
             }
+            user.out.writeInt(roomKey);
             rooms.get(roomKey).add(user);
             it.remove();
             continue;
@@ -144,8 +148,9 @@ class Room {
               continue;
             }
             int y=user.in.readInt();
-            if(y==1) user.Ready();
+            if(y==2) user.Ready();
             else {user.enterRoom();all_ready=false;}
+            user.sendStatus();
           } catch(IOException e){
             it.remove();
           }
@@ -177,8 +182,11 @@ class Game {
       n=r.users.size();
       players = new Player[n];
       int cnt=0;
-      for(User u : r.users)
+      for(User u : r.users){
+        u.status=3;
+        try{ u.sendStatus(); } catch(IOException e) {}
         players[cnt++]=new Player(u);
+      }
       randomShuffle(players,n);
     }
     Thread gameThread = new Thread(()->{game();});
