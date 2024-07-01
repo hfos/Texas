@@ -4,10 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
 
-class Data{
-  public volatile int status;
-  public volatile int roomId;
-}
 
 public class Client {
   final static String SERVER_IP = "localhost";
