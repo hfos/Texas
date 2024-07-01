@@ -4,9 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
 
-import Server.Game;
-import Server.Room;
-
 public class Client {
   final static String SERVER_IP = "localhost";
   final static int SERVER_PORT = 8848;
