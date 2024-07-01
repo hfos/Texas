@@ -1,15 +1,10 @@
+package Client;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import Client.Data;
-
-class UserInterface implements Runnable {
+public class UserInterface implements Runnable {
 
     Data data;
 
-    UserInterface(Data datat) {
+    public UserInterface(Data datat) {
         data = datat;
     }
 
