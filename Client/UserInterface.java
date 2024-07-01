@@ -120,7 +120,10 @@ class UserInterface implements Runnable {
 
     public JFrame frame = new JFrame("Texas");
 
-    public UserInterface() {
+    public static Data data;
+
+    public UserInterface(Data datat) {
+        data = datat;
         pipe = new PipedOutputStream();
         out = new DataOutputStream(pipe);
     }
@@ -299,9 +302,9 @@ class UserInterface implements Runnable {
         
         JPanel titleBar = new JPanel(new BorderLayout());
         titleBar.setBackground(bgColor);
-        titleBar.setPreferredSize(new Dimension(0, 60));
+        titleBar.setPreferredSize(new Dimension(0, 70));
 
-        JLabel titleLabel = new JLabel(" Texas Holdem Pocker");
+        JLabel titleLabel = new JLabel("");
         titleLabel.setForeground(foreColor);
         titleLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 32));
         titleBar.add(titleLabel, BorderLayout.CENTER);
@@ -399,7 +402,7 @@ class UserInterface implements Runnable {
 
         Rectangle workArea = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 
-        frame.setBounds(workArea.width/6,workArea.height/6,workArea.width*2/3, workArea.height*2/3);
+        frame.setBounds(300,100,1024, 600);
 
         frame.setVisible(true);
     }
