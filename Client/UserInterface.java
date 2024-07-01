@@ -1,6 +1,6 @@
 package Client;
 
-public class UserInterface implements Runnable {
+class UserInterface implements Runnable {
 
     Data data;
 

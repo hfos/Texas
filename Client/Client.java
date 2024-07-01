@@ -28,11 +28,10 @@ public class Client {
     System.out.println("connected");
     data.status = 0;
     UserInterface ui = new UserInterface(data);
-    ui.start();
+    Thread UIThread = new Thread(ui);
+    UIThread.start();
 
-    OUT:
-    while(true){
-    }
+    
 
     try {
       out.close();
