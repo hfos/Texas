@@ -1,4 +1,3 @@
-package Client;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -402,5 +401,15 @@ class UserInterface implements Runnable {
         frame.setBounds(workArea.width/6,workArea.height/6,workArea.width*2/3, workArea.height*2/3);
 
         frame.setVisible(true);
+    }
+}
+
+class test {
+
+    public static void main(String[] args) throws InterruptedException {
+        UserInterface ui = new UserInterface();
+        Thread UIThread = new Thread(ui);
+        UIThread.start();
+        UIThread.join();
     }
 }
