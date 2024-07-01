@@ -1,9 +1,4 @@
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import Client.Data;
+package Client;
 
 class UserInterface implements Runnable {
 
