@@ -351,14 +351,14 @@ class Game {
 }
 class Player {
   User u;
-  final static int MAX_MONEY = 500;
+  final static int INIT_MONEY = 500;
   int money,bets;
   boolean allIn,folded;
   boolean active;
   Card x,y;
   public Player(User user){
     u = user;
-    money = MAX_MONEY;
+    money = INIT_MONEY;
     active = true;
     try {
       u.userSocket.setSoTimeout(10000); // 10 seconds
