@@ -1,6 +1,15 @@
 package Client;
 
-class UserInterface implements Runnable {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.applet.*;
+
+class MainInterface extends Applet {
+
+}
+
+public class UserInterface implements Runnable {
 
     Data data;
 
