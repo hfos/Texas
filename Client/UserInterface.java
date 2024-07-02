@@ -3,7 +3,11 @@ package Client;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.PipedOutputStream;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
@@ -112,20 +116,26 @@ class UserInterface implements Runnable {
 
     public static Rectangle lastBound = new Rectangle();
 
-    public JPanel p1 = initializeUI1();
+    public JPanel p1;
 
-    public JPanel p2 = initializeUI2();
+    public JPanel p2;
 
-    public JPanel p3 = initializeUI3();
+    public JPanel p3;
 
     public JFrame frame = new JFrame("Texas");
 
     public static Data data;
 
     public UserInterface(Data datat) {
+        //System.out.println("shit");
+        //System.out.println(datat);
         data = datat;
         pipe = new PipedOutputStream();
         out = new DataOutputStream(pipe);
+
+        p1 = initializeUI1();
+        p2 = initializeUI2();
+        p3 = initializeUI3();
     }
 
     public JPanel initializeUI1()
@@ -223,11 +233,13 @@ class UserInterface implements Runnable {
 
         // 创建列表模型，使用数组作为数据源
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        listModel.addElement("item 1");
-        listModel.addElement("item 2");
-        listModel.addElement("item 3");
-        listModel.addElement("item 4");
-        listModel.addElement("item 5");
+
+        Hashtable<String,Integer> dict = new Hashtable<String,Integer>();
+
+        for (int i : data.rooms) {
+            listModel.addElement("Room #" + i);
+            dict.put("Room #"+i, i);
+        }
  
         // 创建JList组件并设置模型
         JList<String> list = new JList<>(listModel);
@@ -254,6 +266,16 @@ class UserInterface implements Runnable {
                     frame.add(p3, BorderLayout.CENTER);
                     frame.remove(p2);
                     System.out.println(list.getSelectedValue());
+                    int tmp=dict.get(list.getSelectedValue());
+                    System.out.println(tmp);
+                    try
+                    {
+                        out.writeInt(tmp);
+                    }
+                    catch(IOException err)
+                    {
+                        System.exit(1);
+                    }
                 }
             }
         });
@@ -278,7 +300,14 @@ class UserInterface implements Runnable {
         startButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                //
+                try
+                {
+                    out.writeInt(-1);
+                }
+                catch(IOException err)
+                {
+                    System.exit(1);
+                }
             }
         });
 

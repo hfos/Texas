@@ -16,6 +16,15 @@ public class Server {
     } catch(IOException e){
       e.printStackTrace();
     }
+    System.out.println("Server started");
+    Thread debugThread = new Thread(()->{
+      while(true){
+        try{Thread.sleep(5000);}catch(InterruptedException e){}
+        System.out.println("hall "+users.size());
+        System.out.println("room "+rooms.size());
+      }
+    });
+    debugThread.start();
 
     Thread accepterThread = new Thread(()->{accepter();});
     accepterThread.start();
@@ -29,7 +38,7 @@ public class Server {
     while(true){
       try {
         Socket clientSocket = serverSocket.accept();
-        clientSocket.setSoTimeout(100);
+        clientSocket.setSoTimeout(1000);
         System.out.println("new client: "+clientSocket);
         synchronized(users){
           users.add(new User(clientSocket));
@@ -52,12 +61,14 @@ public class Server {
             continue;
           }
           if(x==-1){
+            System.out.println("fuck");
             int roomKey = createRoom();
             if(roomKey==-1){
               System.err.println("fail to create room");
               continue;
             }
             user.out.writeInt(roomKey);
+            System.out.println("fuckid: "+roomKey);
             rooms.get(roomKey).add(user);
             it.remove();
             continue;
@@ -73,6 +84,7 @@ public class Server {
           user.sendStatus();
         } catch(IOException e){
           it.remove();
+          System.out.println("Client disconnected");
         } catch(IllegalStateException e){
         }
       }
