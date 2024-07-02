@@ -1,8 +1,5 @@
 package Client;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.PipedInputStream;
+import java.io.*;
 import java.net.*;
 
 
@@ -27,12 +24,13 @@ public class Client {
     System.out.println("connected");
     data = new Data();
     data.status = 0;
+    data.roomId = 0;
     UserInterface ui = new UserInterface(data);
     Thread UIThread = new Thread(ui);
-    // PipedInputStream pipe;
-    // try {pipe = new PipedInputStream(ui.pipe); userIn = new DataInputStream(pipe);} 
-    // catch(IOException e) {System.err.println("User Interface Error"); System.exit(1);}
-    userIn = new DataInputStream(System.in);
+    PipedInputStream pipe;
+    try {pipe = new PipedInputStream(ui.pipe); userIn = new DataInputStream(pipe);} 
+    catch(IOException e) {System.err.println("User Interface Error"); System.exit(1);}
+    // userIn = new DataInputStream(System.in);
     UIThread.start();
 
     OUT:
@@ -61,6 +59,7 @@ public class Client {
   static void hall(){
     while (true) {
       try{Thread.sleep(100);}catch(InterruptedException e){}
+      System.out.println(data.roomId);
       sendRoomId();
       data.status = recvStatus();
       if(data.status!=0) {
