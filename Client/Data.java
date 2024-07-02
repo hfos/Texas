@@ -2,8 +2,6 @@ package Client;
 
 import java.util.*;
 
-import javax.smartcardio.Card;
-
 class Card {
   int color, value;
   public Card(int x,int y){
