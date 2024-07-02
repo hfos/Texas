@@ -6,6 +6,7 @@ import java.io.PipedOutputStream;
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
+import javax.swing.text.Position;
 
 class DrawComponent extends JPanel {
 
@@ -69,11 +70,47 @@ class DrawComponent extends JPanel {
 }
 
 class GameComponent extends DrawComponent{
-    public static int playerNumber = 5;
+    public static int playerNumber = 10;
     public static String[] playerName = new String[10];
     public GameComponent() {
         super(false);
         //init sth
+    }
+
+    public Point intersect(int pid,Point delta)
+    {
+        Point p = new Point(0,0);
+
+        int width = this.getWidth();
+        int height = this.getHeight();
+
+        double midW = width/2.0;
+        double midH = height/2.0;
+        
+        double theta = Math.atan(((double)width)/height);
+
+        double gamma = pid*2.0*Math.PI/playerNumber;
+
+        //System.out.println(gamma);
+
+        if(gamma <= theta || gamma >= 2.0*Math.PI-theta)
+        {
+            p = new Point((int)(midW - Math.tan(gamma) * midH-delta.x/2.0),height);
+        }
+        else if(gamma <= Math.PI - theta)
+        {
+            p = new Point(0,(int)(midH + Math.tan(Math.PI/2.0-gamma) * midW + delta.y/2.0));
+        }
+        else if(gamma <= theta + Math.PI)
+        {
+            p = new Point((int)(midW + Math.tan(gamma) * midH - delta.x/2.0),delta.y);
+        }
+        else
+        {
+            p = new Point(width-delta.x,(int)(midH - Math.tan(Math.PI/2.0-gamma) * midW +delta.y/2.0));
+        }
+
+        return p;
     }
 
     @Override
@@ -81,17 +118,16 @@ class GameComponent extends DrawComponent{
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        g2d.setFont(new Font(Font.SERIF, Font.BOLD, 120));
+        g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
 
-        int width = this.getWidth();
-        int height = this.getHeight();
 
-        for (int i = -1; i < width / 240 + 2; i++) {
-            for (int j = -1; j < height / 240 + 2; j++) {
-                g2d.drawString((decors.charAt(Math.abs(i - j) % 4)) + "", i * 240 + delta, j * 240 + delta);
-                g2d.drawString(".", i * 240 + 146 + delta, j * 240 + 92 + delta);
-            }
+        for(int i = 0; i<playerNumber; ++i)
+        {
+            Point pos = intersect(i,new Point(30,30));
+            g2d.drawString(i+"", pos.x, pos.y);
         }
+        
+        
     }
 }
 
@@ -155,7 +191,7 @@ class UserInterface implements Runnable {
         nameField.addFocusListener(new FocusAdapter() {
                     @Override
                     public void focusGained(FocusEvent e) {
-                        if (nameField.getText().equals("Your Name")) {
+                        if (nameField.getForeground()==Color.LIGHT_GRAY && nameField.getText().equals("Your Name")) {
                             nameField.setText("");
                             nameField.setForeground(bgColor);
                         }
@@ -237,7 +273,7 @@ class UserInterface implements Runnable {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 7.0;
         constraints.weighty = 7.0;
-        constraints.insets=new Insets(0, 150, 0, 150);
+        constraints.insets=new Insets(70, 150, 70, 150);
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         drawComponent.add(pane);
         layout.setConstraints(pane,constraints);
@@ -383,7 +419,7 @@ class UserInterface implements Runnable {
         exitButton.setPreferredSize(new Dimension(60, 60));
         exitButton.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 System.exit(0);
             }
         });
