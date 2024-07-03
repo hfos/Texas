@@ -160,13 +160,14 @@ public class Client {
         while (true) {
             int x = webReadBetAndPot();
             System.out.println("x = " + x);
+            data.myTurn = false;
             if (x == 114514 + 0) {
                 return false; //next round
-             }else if (x == 114514 + 1) {
+            } else if (x == 114514 + 1) {
                 return true; //game over
-             }else if (x == 114514 + 2) {
-                openPublicCard(); 
-            }else if (x == 1) {
+            } else if (x == 114514 + 2) {
+                openPublicCard();
+            } else if (x == 1) {
                 sendOption();
             }
         }
