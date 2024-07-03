@@ -77,6 +77,13 @@ public class Client {
       sendStatus();
       data.status = recvStatus();
       if(data.status!=1||data.status!=2) return;
+      try {
+        data.playerNumber = webIn.readInt();
+        data.readyNumber = webIn.readInt();
+      } catch(IOException e) {
+        System.err.println("Network disconnected");
+        System.exit(1);
+      }
       int x = tryUserReadInt();
       if(x==1) data.status=2;
     }

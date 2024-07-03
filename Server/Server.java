@@ -107,6 +107,7 @@ class User {
   DataInputStream in; // must read 0(hall)/room_id/-1(create)/-2(playing) first
   DataOutputStream out; // must sendStatus first
   int status; // 0=hall, 1=room, 2=ready, 3=playing
+  String name;
   public User(Socket clientSocket){
     userSocket=clientSocket;
     status=0;
@@ -132,6 +133,14 @@ class User {
   void sendStatus() throws IOException{
     out.writeInt(status);
   }
+  void sendRoomMsg(Room room,int pos) throws IOException{
+    out.writeInt(room.users.size());
+    out.writeInt(pos);
+    for(User user : room.users){
+      out.writeChars(user.name);
+      out.writeBoolean(user.status==2);
+    }
+  }
 }
 class Room {
   Set<User> users;
@@ -148,7 +157,7 @@ class Room {
       try{Thread.sleep(100);}catch(InterruptedException e){}
       synchronized(users){
         Iterator<User> it = users.iterator();
-        boolean all_ready = true;
+        int num = users.size(), ready_num = 0;
         while(it.hasNext()){
           User user = it.next();
           try{
@@ -160,14 +169,16 @@ class Room {
               continue;
             }
             int y=user.in.readInt();
-            if(y==2) user.Ready();
-            else {user.enterRoom();all_ready=false;}
+            if(y==2) {user.Ready(); ++ready_num;}
+            else {user.enterRoom();}
             user.sendStatus();
+            user.out.writeInt(num);
+            user.out.writeInt(ready_num);
           } catch(IOException e){
             it.remove();
           }
         }
-        if(users.size()>0&&all_ready){
+        if(ready_num>=num&&num>1){
           break OUT;
         }
       }
@@ -195,7 +206,7 @@ class Game {
       players = new Player[n];
       int cnt=0;
       for(User u : r.users){
-        u.status=3;
+        u.enterGame();
         try{ u.sendStatus(); } catch(IOException e) {}
         players[cnt++]=new Player(u);
       }
