@@ -168,6 +168,8 @@ class UserInterface implements Runnable {
 
     public static Data data;
 
+    Timer timer;
+
     public UserInterface(Data datat) {
         //System.out.println("shit");
         //System.out.println(datat);
@@ -277,10 +279,16 @@ class UserInterface implements Runnable {
 
         Hashtable<String, Integer> dict = new Hashtable<String, Integer>();
 
-        for (int i : data.rooms) {
-            listModel.addElement("Room #" + i);
-            dict.put("Room #" + i, i);
-        }
+        timer = new Timer(500, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                listModel.clear();
+                for (int i : data.rooms) {
+                    listModel.addElement("Room #" + i);
+                    dict.put("Room #" + i, i);
+                }
+            }
+        });
+        timer.start();
 
         // 创建JList组件并设置模型
         JList<String> list = new JList<>(listModel);
@@ -314,6 +322,7 @@ class UserInterface implements Runnable {
                         out.writeInt(tmp);
                         out.writeInt(-1);
                     } catch (IOException err) {
+                        System.out.println("Error: Entering room failed.");
                         System.exit(1);
                     }
                 }
@@ -343,6 +352,7 @@ class UserInterface implements Runnable {
                 try {
                     out.writeInt(-1);
                 } catch (IOException err) {
+                    System.out.println("Error: Creating room failed.");
                     System.exit(1);
                 }
             }
