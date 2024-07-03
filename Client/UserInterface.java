@@ -158,11 +158,7 @@ class UserInterface implements Runnable {
 
     public static Rectangle lastBound = new Rectangle();
 
-    public JPanel p1;
-
-    public JPanel p2;
-
-    public JPanel p3;
+    public JPanel p1, p2, p3, p4;
 
     public JFrame frame = new JFrame("Texas");
 
@@ -180,6 +176,7 @@ class UserInterface implements Runnable {
         p1 = initializeUI1();
         p2 = initializeUI2();
         p3 = initializeUI3();
+        p4 = initializeUI4();
     }
 
     public JPanel initializeUI1() {
@@ -309,9 +306,6 @@ class UserInterface implements Runnable {
                             break;
                         }
                     }
-                } else if (data.status == 1 || data.status == 2) {
-                    System.out.println("shit");
-                    ChangeStatus(p2, p3);
                 }
             }
         });
@@ -338,6 +332,7 @@ class UserInterface implements Runnable {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
+                    ChangeStatus(p2, p3);
                     //System.out.println(list.getSelectedValue());
                     int tmp = dict.get(list.getSelectedValue());
                     //System.out.println(tmp);
@@ -372,6 +367,7 @@ class UserInterface implements Runnable {
         startButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                ChangeStatus(p2, p3);
                 try {
                     out.writeInt(-1);
                 } catch (IOException err) {
@@ -385,6 +381,74 @@ class UserInterface implements Runnable {
     }
 
     public JPanel initializeUI3() {
+        DrawComponent drawComponent = new DrawComponent(true);
+        drawComponent.setBackground(themeColor);
+
+        GridBagLayout layout = new GridBagLayout();
+        drawComponent.setLayout(layout);
+
+        JLabel titleLabel = new JLabel(" ");
+        titleLabel.setForeground(foreColor);
+        titleLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 74));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        drawComponent.add(titleLabel);
+        layout.setConstraints(titleLabel, constraints);
+
+        timer = new Timer(100, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (data.status == 1 || data.status == 2) {
+                    if (data.playerNumber < 2 || data.playerNumber > 10) {
+                        titleLabel.setText("<html>Player Count:  " + data.readyNumber + " / <font color='red'>" + data.playerNumber + "</font></html>");
+                    } else {
+                        titleLabel.setText("<html>Player Count:  " + data.readyNumber + " / " + data.playerNumber + "</html>");
+                    }
+                }
+            }
+        });
+        timer.start();
+
+        JButton startButton = new JButton("Ready!");
+        startButton.setForeground(bgColor);
+        startButton.setFocusable(false);
+        startButton.setBackground(foreColor);
+        startButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 54));
+        startButton.setPreferredSize(new Dimension(200, 100));
+        startButton.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 2.0;
+        constraints.weighty = 2.0;
+        constraints.insets = new Insets(0, 150, 0, 150);
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        drawComponent.add(startButton);
+        layout.setConstraints(startButton, constraints);
+
+        startButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (startButton.getText().equals("Ready!")) {
+                    startButton.setText("<html><font color='grey'>Ready!</font></html>");
+                    startButton.setEnabled(false);
+                    try {
+                        System.out.println("tmp");
+                        out.writeInt(1);
+                    } catch (IOException ex) {
+                    }
+                }
+            }
+        });
+
+        return drawComponent;
+    }
+
+    public JPanel initializeUI4() {
         GameComponent gameComponent = new GameComponent();
         gameComponent.setBackground(themeColor);
         return gameComponent;
