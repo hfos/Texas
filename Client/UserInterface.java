@@ -19,6 +19,8 @@ class DrawComponent extends JPanel {
 
     public static String decors = "♠♥♣♦";
 
+    public boolean interactive = false;
+
     public DrawComponent(boolean motion) {
         this.addMouseListener(new MouseAdapter() {
             @Override
@@ -54,6 +56,10 @@ class DrawComponent extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        if (!interactive) {
+            return;
+        }
+
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
@@ -177,6 +183,11 @@ class GameComponent extends DrawComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
+
+        if (!interactive) {
+            return;
+        }
+
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
@@ -229,7 +240,7 @@ class UserInterface implements Runnable {
 
     public static Rectangle lastBound = new Rectangle();
 
-    public JPanel p1, p2, p3, p4;
+    public DrawComponent p1, p2, p3, p4;
 
     public JFrame frame = new JFrame("Texas");
 
@@ -250,8 +261,26 @@ class UserInterface implements Runnable {
         p4 = initializeUI4();
     }
 
-    public JPanel initializeUI1() {
+    @SuppressWarnings("deprecation")
+    public void ChangeStatus(DrawComponent p1, DrawComponent p2) {
+        Component[] c = frame.getContentPane().getComponents();
+        for (Component i : c) {
+            if (i == p2) {
+                return;
+            }
+            if (i == p1) {
+                p1.interactive = false;
+                p1.hide();
+                frame.remove(p1);
+            }
+        }
+        frame.add(p2);
+        p2.interactive = true;
+    }
+
+    public DrawComponent initializeUI1() {
         DrawComponent drawComponent = new DrawComponent(true);
+        drawComponent.interactive = true;
         drawComponent.setBackground(themeColor);
 
         GridBagLayout layout = new GridBagLayout();
@@ -327,32 +356,14 @@ class UserInterface implements Runnable {
             @SuppressWarnings("deprecation")
             @Override
             public void mousePressed(MouseEvent e) {
-                p1.hide();
-                frame.add(p2, BorderLayout.CENTER);
-                frame.remove(p1);
+                ChangeStatus(p1, p2);
             }
         });
 
         return drawComponent;
     }
 
-    @SuppressWarnings("deprecation")
-    public void ChangeStatus(JPanel p1, JPanel p2) {
-        Component[] c = frame.getContentPane().getComponents();
-        for (Component i : c) {
-            //System.out.println("getComponent: " + i);
-            if (i == p2) {
-                return;
-            }
-            if (i == p1) {
-                p1.hide();
-                frame.remove(p1);
-            }
-        }
-        frame.add(p2);
-    }
-
-    public JPanel initializeUI2() {
+    public DrawComponent initializeUI2() {
         DrawComponent drawComponent = new DrawComponent(true);
         drawComponent.setBackground(themeColor);
 
@@ -451,7 +462,7 @@ class UserInterface implements Runnable {
         return drawComponent;
     }
 
-    public JPanel initializeUI3() {
+    public DrawComponent initializeUI3() {
         DrawComponent drawComponent = new DrawComponent(true);
         drawComponent.setBackground(themeColor);
 
@@ -522,7 +533,7 @@ class UserInterface implements Runnable {
         return drawComponent;
     }
 
-    public JPanel initializeUI4() {
+    public DrawComponent initializeUI4() {
         GameComponent gameComponent = new GameComponent();
         gameComponent.setBackground(themeColor);
 
