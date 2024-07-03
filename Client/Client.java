@@ -5,7 +5,7 @@ import java.net.*;
 
 public class Client {
 
-  final static String SERVER_IP = "localhost";
+  final static String SERVER_IP = "43.143.223.49";
   final static int SERVER_PORT = 8848;
   static Socket socket;
   static DataOutputStream webOut;
