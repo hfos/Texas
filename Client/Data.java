@@ -25,7 +25,6 @@ class Player {
 
     public Card c1, c2;
     public int money, bet;
-    public boolean ready;
     public String name;
 
     public Player(Card C1, Card C2, int Money, int Bet, boolean Ready, String Name) {
@@ -33,7 +32,6 @@ class Player {
         c2 = C2;
         money = Money;
         bet = Bet;
-        ready = Ready;
         name = Name;
     }
 }
@@ -45,6 +43,7 @@ public class Data {
     public volatile List<Integer> rooms;
     public volatile List<Player> players;
     public volatile CardGroup5 publicCards;
+    public volatile int playerNumber, readyNumber;
 
     public Data() {
         rooms = Arrays.asList(1, 2, 3, 4, 5);
