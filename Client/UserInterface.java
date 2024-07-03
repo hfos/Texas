@@ -291,18 +291,14 @@ class UserInterface implements Runnable {
         // 创建列表模型，使用数组作为数据源
         DefaultListModel<String> listModel = new DefaultListModel<>();
 
-        Hashtable<String, Integer> dict = new Hashtable<String, Integer>();
-
-        timer = new Timer(500, new ActionListener() {
+        timer = new Timer(700, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (data.status == 0) {
                     listModel.clear();
-                    dict.clear();
                     for (int i = 0;; ++i) {
                         try {
                             int t = data.rooms.get(i);
                             listModel.addElement("Room #" + t);
-                            dict.put("Room #" + t, t);
                         } catch (IndexOutOfBoundsException err) {
                             break;
                         }
@@ -332,10 +328,14 @@ class UserInterface implements Runnable {
         list.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() >= 2) {
-                    ChangeStatus(p2, p3);
+                if (e.getClickCount() == 2) {
                     //System.out.println(list.getSelectedValue());
-                    int tmp = dict.get(list.getSelectedValue());
+                    String S = list.getSelectedValue();
+                    if (S == null) {
+                        return;
+                    }
+                    int tmp = Integer.parseInt(S.split("#")[1]);
+                    ChangeStatus(p2, p3);
                     //System.out.println(tmp);
                     try {
                         out.writeInt(tmp);
@@ -368,6 +368,7 @@ class UserInterface implements Runnable {
         startButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+
                 ChangeStatus(p2, p3);
                 try {
                     out.writeInt(-1);
@@ -462,12 +463,14 @@ class UserInterface implements Runnable {
             b1.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    try {out.writeInt(Integer.parseInt(b1.getText()));}
-                    catch(IOException err) {}
+                    try {
+                        out.writeInt(Integer.parseInt(b1.getText()));
+                    } catch (IOException err) {
+                    }
+
                 }
             });
         }
-
         return gameComponent;
     }
 
