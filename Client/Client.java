@@ -157,10 +157,15 @@ public class Client {
     ++data.showedCardsNumber;
   }
   static void sendOption(){
+    System.out.println("input opt in UI: ");
+    System.out.println("my money " + data.players.get(data.myPos).money);
     int x = userReadInt();
+    System.out.println("your opt is "+ x);
+    webSendInt(-2);
     webSendInt(x);
   }
   static int webReadBetAndPot(){
+    System.out.println("read bet and pot");
     int x = webReadInt();
     if(x!=0) return x;
     try{x = (webIn.readBoolean()?1:0);} catch(IOException e) {}
