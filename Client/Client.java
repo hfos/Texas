@@ -107,6 +107,7 @@ public class Client {
             try {
                 data.playerNumber = webIn.readInt();
                 data.readyNumber = webIn.readInt();
+                //System.out.println("get ready number: " + data.readyNumber);
             } catch (IOException e) {
                 System.err.println("Network disconnected");
                 System.exit(1);
