@@ -105,13 +105,40 @@ class GameComponent extends DrawComponent {
 
         //System.out.println(gamma);
         if (gamma <= theta || gamma >= 2.0 * Math.PI - theta) {
-            p = new Point((int) (midW - Math.tan(gamma) * midH - delta.x / 2.0), height);
+            p = new Point((int) (midW - Math.tan(gamma) * midH - delta.x / 2.0), height - delta.y / 2);
         } else if (gamma <= Math.PI - theta) {
-            p = new Point(0, (int) (midH + Math.tan(Math.PI / 2.0 - gamma) * midW + delta.y / 2.0));
+            p = new Point(delta.x / 2, (int) (midH + Math.tan(Math.PI / 2.0 - gamma) * midW + delta.y / 2.0));
         } else if (gamma <= theta + Math.PI) {
             p = new Point((int) (midW + Math.tan(gamma) * midH - delta.x / 2.0), delta.y);
         } else {
-            p = new Point(width - delta.x, (int) (midH - Math.tan(Math.PI / 2.0 - gamma) * midW + delta.y / 2.0));
+            p = new Point(width - delta.x / 2, (int) (midH - Math.tan(Math.PI / 2.0 - gamma) * midW + delta.y / 2.0));
+        }
+
+        return p;
+    }
+
+    public Point intersectCenter(int pid, Point delta) {
+        Point p = new Point(0, 0);
+
+        int width = this.getWidth();
+        int height = this.getHeight();
+
+        double midW = width / 2.0;
+        double midH = height / 2.0;
+
+        double theta = Math.atan(((double) width) / height);
+
+        double gamma = pid * 2.0 * Math.PI / playerNumber;
+
+        //System.out.println(gamma);
+        if (gamma <= theta || gamma >= 2.0 * Math.PI - theta) {
+            p = new Point((int) (midW - Math.tan(gamma) * midH), height - delta.y / 2);
+        } else if (gamma <= Math.PI - theta) {
+            p = new Point(delta.x / 2, (int) (midH + Math.tan(Math.PI / 2.0 - gamma) * midW));
+        } else if (gamma <= theta + Math.PI) {
+            p = new Point((int) (midW + Math.tan(gamma) * midH), delta.y / 2);
+        } else {
+            p = new Point(width - delta.x / 2, (int) (midH - Math.tan(Math.PI / 2.0 - gamma) * midW));
         }
 
         return p;
@@ -119,12 +146,20 @@ class GameComponent extends DrawComponent {
     public static java.util.List<String> cardString = Arrays.asList("0", "0", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A");
     public static java.util.List<Color> decorColor = Arrays.asList(Color.BLACK, Color.RED, Color.BLACK, Color.RED);
 
-    public void paintPocker(Graphics2D g, Point p, Card c) {
+    public void paintPocker(Graphics2D g, Point p, Card c, boolean vis) {
         // 创建圆角矩形，参数依次为x, y, width, height, arcWidth, arcHeight
+        p.x -= 27;
+        p.y -= 43;
         RoundRectangle2D roundRect = new RoundRectangle2D.Double(p.x, p.y, 54, 86, 5, 5);
         g.setColor(Color.WHITE);
         g.fill(roundRect);
 
+        if (vis == false) {
+            g.setColor(Color.BLACK);
+            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 33));
+            g.drawString("?", p.x + 4, p.y + 28);
+            return;
+        }
         g.setColor(decorColor.get(c.color));
         g.setFont(new Font(Font.SERIF, Font.BOLD, 33 - 3 * cardString.get(c.value).length()));
         g.drawString(cardString.get(c.value), p.x + 11 - 6 * cardString.get(c.value).length(), p.y + 25);
@@ -140,11 +175,13 @@ class GameComponent extends DrawComponent {
         g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
 
         for (int i = 0; i < playerNumber; ++i) {
-            Point pos = intersect(i, new Point(30, 30));
+            Point pos = intersectCenter(i, new Point(200, 200));
+            pos.x -= 10;
+            pos.y += 10;
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
             g2d.drawString(i + "", pos.x, pos.y);
-            paintPocker(g2d, pos, new Card(1, 10));
+            paintPocker(g2d, intersectCenter(i, new Point(54, 86)), new Card(1, 10), i == 0);
         }
 
     }
