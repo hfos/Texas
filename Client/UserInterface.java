@@ -269,6 +269,22 @@ class UserInterface implements Runnable {
         return drawComponent;
     }
 
+    @SuppressWarnings("deprecation")
+    public void ChangeStatus(JPanel p1, JPanel p2) {
+        Component[] c = frame.getContentPane().getComponents();
+        for (Component i : c) {
+            //System.out.println("getComponent: " + i);
+            if (i == p2) {
+                return;
+            }
+            if (i == p1) {
+                p1.hide();
+                frame.remove(p1);
+            }
+        }
+        frame.add(p2);
+    }
+
     public JPanel initializeUI2() {
         DrawComponent drawComponent = new DrawComponent(true);
         drawComponent.setBackground(themeColor);
@@ -283,16 +299,21 @@ class UserInterface implements Runnable {
 
         timer = new Timer(500, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                listModel.clear();
-                dict.clear();
-                for (int i = 0;; ++i) {
-                    try {
-                        int t = data.rooms.get(i);
-                        listModel.addElement("Room #" + t);
-                        dict.put("Room #" + t, t);
-                    } catch (IndexOutOfBoundsException err) {
-                        break;
+                if (data.status == 0) {
+                    listModel.clear();
+                    dict.clear();
+                    for (int i = 0;; ++i) {
+                        try {
+                            int t = data.rooms.get(i);
+                            listModel.addElement("Room #" + t);
+                            dict.put("Room #" + t, t);
+                        } catch (IndexOutOfBoundsException err) {
+                            break;
+                        }
                     }
+                } else if (data.status == 1 || data.status == 2) {
+                    System.out.println("shit");
+                    ChangeStatus(p2, p3);
                 }
             }
         });
@@ -316,13 +337,9 @@ class UserInterface implements Runnable {
         layout.setConstraints(pane, constraints);
 
         list.addMouseListener(new MouseAdapter() {
-            @SuppressWarnings("deprecation")
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
-                    p2.hide();
-                    frame.add(p3, BorderLayout.CENTER);
-                    frame.remove(p2);
                     //System.out.println(list.getSelectedValue());
                     int tmp = dict.get(list.getSelectedValue());
                     //System.out.println(tmp);
