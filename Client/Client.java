@@ -121,12 +121,16 @@ public class Client {
     }
   }
 
+  static void showAll() {data.showAll = true;}
   static void game() {
     System.out.println("enter game");
     data.myPos = webReadInt();
     webReadInt();
     while (true) {
-      if(round()) break;
+      boolean res = round();
+      showAll();
+      try{Thread.sleep(2000);} catch(InterruptedException e) {}
+      if(res) break;
     }
     return;
   }
@@ -151,7 +155,6 @@ public class Client {
       else if(x==114514+2) openPublicCard();
       else if(x==1) sendOption();
     }
-    // do sth
   }
   static void openPublicCard(){
     ++data.showedCardsNumber;

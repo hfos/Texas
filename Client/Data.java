@@ -45,11 +45,13 @@ public class Data {
     public volatile int dealer;
     public volatile int pot;
     public volatile boolean myTurn;
+    public volatile boolean showAll;
 
     public Data() {
         rooms = new CopyOnWriteArrayList<Integer>();
         players = new CopyOnWriteArrayList<Player>();
         showedCardsNumber = 0;
         playerNumber = 0;
+        showAll = false;
     }
 }
