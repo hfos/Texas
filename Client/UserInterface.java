@@ -7,6 +7,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -282,9 +284,15 @@ class UserInterface implements Runnable {
         timer = new Timer(500, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 listModel.clear();
-                for (int i : data.rooms) {
-                    listModel.addElement("Room #" + i);
-                    dict.put("Room #" + i, i);
+                dict.clear();
+                for (int i = 0;; ++i) {
+                    try {
+                        int t = data.rooms.get(i);
+                        listModel.addElement("Room #" + t);
+                        dict.put("Room #" + t, t);
+                    } catch (IndexOutOfBoundsException err) {
+                        break;
+                    }
                 }
             }
         });
@@ -315,9 +323,9 @@ class UserInterface implements Runnable {
                     p2.hide();
                     frame.add(p3, BorderLayout.CENTER);
                     frame.remove(p2);
-                    System.out.println(list.getSelectedValue());
+                    //System.out.println(list.getSelectedValue());
                     int tmp = dict.get(list.getSelectedValue());
-                    System.out.println(tmp);
+                    //System.out.println(tmp);
                     try {
                         out.writeInt(tmp);
                         out.writeInt(-1);

@@ -1,6 +1,7 @@
 package Client;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class Card {
 
@@ -40,13 +41,14 @@ public class Data {
 
     public volatile int status;
     public volatile int roomId;
-    public volatile List<Integer> rooms;
-    public volatile List<Player> players;
+    public volatile CopyOnWriteArrayList<Integer> rooms;
+    public volatile CopyOnWriteArrayList<Player> players;
     public volatile CardGroup5 publicCards;
     public volatile int playerNumber, readyNumber;
 
     public Data() {
-        rooms = Arrays.asList();
-        players = Arrays.asList();
+        rooms = new CopyOnWriteArrayList<Integer>();
+        players = new CopyOnWriteArrayList<Player>();
+
     }
 }
