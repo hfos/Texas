@@ -254,6 +254,7 @@ class UserInterface implements Runnable {
         layout.setConstraints(startButton, constraints);
 
         startButton.addMouseListener(new MouseAdapter() {
+            @SuppressWarnings("deprecation")
             @Override
             public void mousePressed(MouseEvent e) {
                 p1.hide();
@@ -301,6 +302,7 @@ class UserInterface implements Runnable {
         layout.setConstraints(pane, constraints);
 
         list.addMouseListener(new MouseAdapter() {
+            @SuppressWarnings("deprecation")
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
@@ -461,8 +463,7 @@ class UserInterface implements Runnable {
 
         frame.add(p1, BorderLayout.CENTER);
 
-        Rectangle workArea = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-
+        // Rectangle workArea = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         frame.setBounds(300, 100, 1024, 600);
 
         frame.setVisible(true);
