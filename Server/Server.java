@@ -63,14 +63,13 @@ public class Server {
             continue;
           }
           if(x==-1){
-            System.out.println("fuck");
             int roomKey = createRoom();
             if(roomKey==-1){
               System.err.println("fail to create room");
               continue;
             }
             user.out.writeInt(roomKey);
-            System.out.println("fuckid: "+roomKey);
+            user.sendRoomList();
             rooms.get(roomKey).add(user);
             it.remove();
             continue;

@@ -69,6 +69,7 @@ public class Client {
       try{Thread.sleep(100);}catch(InterruptedException e){}
       sendRoomId();
       data.status = recvStatus();
+      System.out.println(data.roomId);
       recvRoomList();
       if(data.status!=0) {
         data.roomId=data.status;
@@ -80,7 +81,6 @@ public class Client {
   }
   static void room(){
     while (true) {
-      try{Thread.sleep(100);}catch(InterruptedException e){}
       sendRoomId();
       sendStatus();
       data.status = recvStatus();
@@ -94,6 +94,7 @@ public class Client {
       }
       int x = tryUserReadInt();
       if(x==1) data.status=2;
+      try{Thread.sleep(50);}catch(InterruptedException e){}
     }
   }
   static void game(){
