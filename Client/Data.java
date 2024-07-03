@@ -44,6 +44,7 @@ public class Data {
     public volatile int myPos;
     public volatile int dealer;
     public volatile int pot;
+    public volatile boolean myTurn;
 
     public Data() {
         rooms = new CopyOnWriteArrayList<Integer>();

@@ -157,6 +157,7 @@ public class Client {
     ++data.showedCardsNumber;
   }
   static void sendOption(){
+    data.myTurn = true;
     System.out.println("input opt in UI: ");
     System.out.println("my money " + data.players.get(data.myPos).money);
     int x = userReadInt();
