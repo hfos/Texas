@@ -19,9 +19,10 @@ public class Server {
     System.out.println("Server started");
     Thread debugThread = new Thread(()->{
       while(true){
-        try{Thread.sleep(5000);}catch(InterruptedException e){}
+        try{Thread.sleep(3000);}catch(InterruptedException e){}
         System.out.println("hall "+users.size());
         System.out.println("room "+rooms.size());
+        System.out.println(rooms);
       }
     });
     debugThread.start();
@@ -58,6 +59,7 @@ public class Server {
           int x=user.in.readInt();
           if(x==0) {
             user.sendStatus();
+            user.sendRoomList();
             continue;
           }
           if(x==-1){
@@ -82,6 +84,7 @@ public class Server {
           rooms.get(x).add(user);
           it.remove();
           user.sendStatus();
+          user.sendRoomList();
         } catch(IOException e){
           it.remove();
           System.out.println("Client disconnected");
@@ -98,7 +101,7 @@ public class Server {
         break;
       }
     if(key==0) return -1;
-    rooms.put(key,new Room(key));
+    synchronized(rooms) {rooms.put(key,new Room(key));}
     return key;
   }
 }
@@ -133,13 +136,15 @@ class User {
   void sendStatus() throws IOException{
     out.writeInt(status);
   }
-  void sendRoomMsg(Room room,int pos) throws IOException{
-    out.writeInt(room.users.size());
-    out.writeInt(pos);
-    for(User user : room.users){
-      out.writeChars(user.name);
-      out.writeBoolean(user.status==2);
+  void sendRoomList() throws IOException{
+    List<Integer> l = new ArrayList<>();
+    synchronized(Server.rooms){
+      for(Integer k : Server.rooms.keySet())
+        l.add(k);
     }
+    out.writeInt(l.size());
+    for(int i=0;i<l.size();++i)
+      out.writeInt(l.get(i));
   }
 }
 class Room {
@@ -184,7 +189,7 @@ class Room {
       }
     }
     Game game = new Game(this);
-    Server.rooms.remove(roomId);
+    synchronized(Server.rooms) {Server.rooms.remove(roomId);}
     Server.games.add(game);
   }
   void add(User user) throws IllegalStateException{

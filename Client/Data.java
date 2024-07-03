@@ -46,7 +46,7 @@ public class Data {
     public volatile int playerNumber, readyNumber;
 
     public Data() {
-        rooms = Arrays.asList(1, 2, 3, 4, 5);
+        rooms = Arrays.asList();
         players = Arrays.asList();
     }
 }

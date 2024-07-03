@@ -1,6 +1,7 @@
 package Client;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 
 public class Client {
@@ -33,6 +34,13 @@ public class Client {
     // userIn = new DataInputStream(System.in);
     UIThread.start();
 
+    Thread debugThread = new Thread(()->{
+      while(true){
+        try{Thread.sleep(3000);}catch(InterruptedException e){}
+        System.out.println(data.rooms);
+      }
+    });
+    debugThread.start();
     OUT:
     while(true){
       switch (data.status) {
@@ -59,9 +67,9 @@ public class Client {
   static void hall(){
     while (true) {
       try{Thread.sleep(100);}catch(InterruptedException e){}
-      System.out.println(data.roomId);
       sendRoomId();
       data.status = recvStatus();
+      recvRoomList();
       if(data.status!=0) {
         data.roomId=data.status;
         data.status=1;
@@ -135,5 +143,15 @@ public class Client {
   }
   static void sendRoomId(){
     webSendInt(data.roomId);
+  }
+  static void recvRoomList(){
+    try {
+      int n = webIn.readInt();
+      data.rooms = new ArrayList<>();
+      for(int i=0;i<n;++i) data.rooms.add(webIn.readInt());
+    } catch (IOException e){
+      System.err.println("Network disconnected");
+      System.exit(1);
+    }
   }
 }
