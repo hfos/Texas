@@ -350,9 +350,6 @@ class Game {
     for(int i=0;i<n;++i){
       try{
         players[i].u.out.writeInt(0);
-        System.out.println("i="+i);
-        System.out.println("opt_player="+opt_player);
-        System.out.println("send: "+(i==opt_player));
         players[i].u.out.writeBoolean(i==opt_player);
         players[i].u.out.writeInt(pot);
         for(int j=0;j<n;++j){
@@ -362,41 +359,59 @@ class Game {
         }
       } catch(IOException e) {}
     }
-    System.out.println("send bet and pot");
   }
   private int preflop_betting_round(){
-    int max_bet = MIN_BETS, pot = 0, min_bet = 0;
+    int max_bet = MIN_BETS, pot = 0, check_cnt = 0;
     clearBet();
     getActiveNumber();
-    for(int i=(active_number>2?getNext(dealer):dealer),j=0;;i=getNext(i)){
+    for(int i=getNext(dealer),jj=0;;i=getNext(i)){
+      System.out.println("");
+      System.out.println("player "+i+" turn");
       if(players[i].folded) continue;
-      System.out.println("player "+i+" 's turn");
-      if (j==0) {pot += players[i].bets(MIN_BETS); ++j; sendBetAndPot(pot, -1);}
-      else if(j==1) {pot += players[i].bets(MIN_BETS*2); ++j; sendBetAndPot(pot, -1);}
-      else {
-        sendBetAndPot(pot,i);
-        pot += players[i].recvMoney();
+      if(jj==0) {pot+=players[i].bets(MIN_BETS); jj=1; sendBetAndPot(pot, -1);}
+      else if(jj==1) {pot+=players[i].bets(MIN_BETS*2); jj=2; sendBetAndPot(pot, -1);}
+      else { sendBetAndPot(pot, i); pot += players[i].recvMoney();}
+      System.out.println("pot = "+pot);
+      System.out.println("p0 bet = "+players[0].bets);
+      System.out.println("p1 bet = "+players[1].bets);
+      if(max_bet==0&&players[i].bets==0) { 
+        ++check_cnt;
+        if(check_cnt+getFoldNumber()==getActiveNumber())
+          break;
+        continue;
       }
       max_bet = max(max_bet,players[i].bets);
-      if(!players[i].folded) min_bet = min(min_bet,players[i].bets);
-      if(players[i].bets<max_bet&&!players[i].allIn)
-        players[i].fold();
-      if(min_bet==max_bet&&min_bet!=0) break;
+      if(players[i].bets<max_bet&&!players[i].allIn) players[i].fold();
+      boolean flag = true;
+      for(int j=0;j<n;++j)
+        if(players[j].active&&!players[j].folded&&!players[j].allIn&&players[j].bets<max_bet)
+          flag=false;
+      if(flag) break;
     }
+    System.out.println("round 1 end");
     return pot;
   }
   private int betting_round(){
-    int max_bet = 0, pot = 0, min_bet = 0;
+    int max_bet = 0, pot = 0, check_cnt = 0;
     clearBet();
+    getActiveNumber();
     for(int i=getNext(dealer);;i=getNext(i)){
       if(players[i].folded) continue;
-      sendBetAndPot(pot,i);
+      sendBetAndPot(pot, i);
       pot += players[i].recvMoney();
+      if(max_bet==0&&players[i].bets==0) { 
+        ++check_cnt;
+        if(check_cnt+getFoldNumber()==getActiveNumber())
+          break;
+        continue;
+      }
       max_bet = max(max_bet,players[i].bets);
-      if(!players[i].folded) min_bet = min(min_bet,players[i].bets);
-      if(players[i].bets<max_bet&&!players[i].allIn)
-        players[i].fold();
-      if(min_bet==max_bet&&min_bet!=0) break;
+      if(players[i].bets<=max_bet&&!players[i].allIn) players[i].fold();
+      boolean flag = true;
+      for(int j=0;j<n;++j)
+        if(players[j].active&&!players[j].folded&&!players[j].allIn&&players[j].bets<max_bet)
+          flag=false;
+      if(flag) break;
     }
     return pot;
   }
@@ -429,6 +444,7 @@ class Game {
   private void clearLoser(){
     for(int i=0;i<n;++i){
       players[i].allIn = false;
+      players[i].folded = false;
       if(players[i].money<=0) players[i].active = false;
     }
   }
