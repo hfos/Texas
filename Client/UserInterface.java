@@ -10,8 +10,6 @@ import java.util.*;
 
 import javax.swing.*;
 import javax.swing.Timer;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
 
 class DrawComponent extends JPanel {
 
