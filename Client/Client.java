@@ -72,6 +72,7 @@ public class Client {
       socket.close();
     } catch (IOException e) {
     }
+    System.exit(0);
   }
 
   static void hall() {
