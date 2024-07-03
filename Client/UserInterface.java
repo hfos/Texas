@@ -95,7 +95,7 @@ class GameComponent extends DrawComponent {
         data = UserInterface.data;
         playerNumber = data.playerNumber;
 
-        anotherTimer = new Timer(500, new ActionListener() {
+        anotherTimer = new Timer(100, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 repaint();
             }
@@ -249,7 +249,7 @@ class GameComponent extends DrawComponent {
 
         if (!data.myTurn) {
             raiseMoney = 0;
-            buttons.get(4).setText("<html>Raise<br>+0</html>");
+            buttons.get(4).setText("<html>Raise: <font color = 'red'>+0</font></html>");
         }
 
         //System.out.println("is it my turn? " + data.myTurn);
@@ -618,12 +618,11 @@ class UserInterface implements Runnable {
         });
         gameComponent.add(checkButton);
 
-        JButton raiseButton = new JButton("<html>Raise<br>+0</html>");
+        JButton raiseButton = new JButton("<html>Raise: <font color = 'red'>+0</font></html>");
         raiseButton.setForeground(bgColor);
         raiseButton.setFocusable(false);
         raiseButton.setBackground(foreColor);
         raiseButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
-        raiseButton.setSize(0, 60);
         raiseButton.setHorizontalAlignment(SwingConstants.CENTER);
         raiseButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -641,13 +640,12 @@ class UserInterface implements Runnable {
         d50Button.setFocusable(false);
         d50Button.setBackground(foreColor);
         d50Button.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
-        d50Button.setSize(0, 60);
         d50Button.setHorizontalAlignment(SwingConstants.CENTER);
         d50Button.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 GameComponent.raiseMoney = Math.max(0, GameComponent.raiseMoney - 50);
-                raiseButton.setText("<html>Raise<br>+" + GameComponent.raiseMoney + "</html>");
+                raiseButton.setText("<html>Raise: <font color = 'red'>+" + GameComponent.raiseMoney + "</font></html>");
             }
         });
         gameComponent.add(d50Button);
@@ -663,7 +661,7 @@ class UserInterface implements Runnable {
             @Override
             public void mousePressed(MouseEvent e) {
                 GameComponent.raiseMoney = Math.max(0, GameComponent.raiseMoney - 5);
-                raiseButton.setText("<html>Raise<br>+" + GameComponent.raiseMoney + "</html>");
+                raiseButton.setText("<html>Raise: <font color = 'red'>+" + GameComponent.raiseMoney + "</font></html>");
             }
         });
         gameComponent.add(d5Button);
@@ -679,7 +677,7 @@ class UserInterface implements Runnable {
             @Override
             public void mousePressed(MouseEvent e) {
                 GameComponent.raiseMoney = Math.max(0, GameComponent.raiseMoney + 5);
-                raiseButton.setText("<html>Raise<br>+" + GameComponent.raiseMoney + "</html>");
+                raiseButton.setText("<html>Raise: <font color = 'red'>+" + GameComponent.raiseMoney + "</font></html>");
             }
         });
         gameComponent.add(a5Button);
@@ -695,7 +693,7 @@ class UserInterface implements Runnable {
             @Override
             public void mousePressed(MouseEvent e) {
                 GameComponent.raiseMoney = Math.max(0, GameComponent.raiseMoney + 50);
-                raiseButton.setText("<html>Raise<br>+" + GameComponent.raiseMoney + "</html>");
+                raiseButton.setText("<html>Raise: <font color = 'red'>+" + GameComponent.raiseMoney + "</font></html>");
             }
         });
         gameComponent.add(a50Button);
