@@ -122,10 +122,67 @@ public class Client {
   }
 
   static void game() {
-    data.status = -1;
+    data.myPos = webReadInt();
+    webReadInt();
+    while (true) {
+      if(round()) break;
+    }
     return;
   }
-
+  static boolean round(){   // return true when game over
+    data.pot = 0;
+    data.showedCardsNumber = 0;
+    data.dealer = webReadInt();
+    Card a = webReadCard(), b = webReadCard(), c = webReadCard(), d = webReadCard(), e = webReadCard();
+    data.publicCards = new CardGroup5(a,b,c,d,e);
+    for(int i=0;i<data.playerNumber;++i){
+      data.players.get(i).c1 = webReadCard();
+      data.players.get(i).c2 = webReadCard();
+    }
+    while(true) {
+      int x = webReadBetAndPot();
+      if(x==114514+0) return false; //next round
+      else if(x==114514+1) return true; //game over
+      else if(x==114514+2) openPublicCard();
+      else if(x==1) sendOption();
+    }
+    // do sth
+  }
+  static void openPublicCard(){
+    ++data.showedCardsNumber;
+  }
+  static void sendOption(){
+    int x = userReadInt();
+    webSendInt(x);
+  }
+  static int webReadBetAndPot(){
+    int x = webReadInt();
+    if(x!=0) return x;
+    try{x = (webIn.readBoolean()?1:0);} catch(IOException e) {}
+    data.pot = webReadInt();
+    for(int i=0;i<data.playerNumber;++i){
+      data.players.get(i).money = webReadInt();
+      data.players.get(i).bet = webReadInt();
+      try{ data.players.get(i).folded = webIn.readBoolean();} catch(IOException e){}
+    }
+    return x;
+  }
+  static Card webReadCard(){
+    webReadInt();
+    try {webIn.readByte();} catch(IOException e) {}
+    int x = webReadInt(), y = webReadInt();
+    return new Card(x,y);
+  }
+  static int webReadInt() {
+    int x = 0;
+    try {
+      x = webIn.readInt();
+    } catch(IOException e) {
+      System.err.println("Network disconnected");
+      System.exit(1);
+    }
+    return x;
+  }
   static void webSendInt(int x) {
     try {
       webOut.writeInt(x);

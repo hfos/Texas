@@ -437,7 +437,7 @@ class UserInterface implements Runnable {
                     startButton.setText("<html><font color='grey'>Ready!</font></html>");
                     startButton.setEnabled(false);
                     try {
-                        System.out.println("tmp");
+                        // System.out.println("tmp");
                         out.writeInt(1);
                     } catch (IOException ex) {
                     }

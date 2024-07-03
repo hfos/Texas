@@ -26,13 +26,15 @@ class Player {
     public Card c1, c2;
     public int money, bet;
     public String name;
+    public boolean folded;
 
-    public Player(Card C1, Card C2, int Money, int Bet, boolean Ready, String Name) {
+    public Player(Card C1, Card C2, int Money, int Bet, boolean Ready, String Name, boolean Folded) {
         c1 = C1;
         c2 = C2;
         money = Money;
         bet = Bet;
         name = Name;
+        folded = Folded;
     }
 }
 
@@ -43,11 +45,15 @@ public class Data {
     public volatile CopyOnWriteArrayList<Integer> rooms;
     public volatile CopyOnWriteArrayList<Player> players;
     public volatile CardGroup5 publicCards;
+    public volatile int showedCardsNumber;
     public volatile int playerNumber, readyNumber;
+    public volatile int myPos;
+    public volatile int dealer;
+    public volatile int pot;
 
     public Data() {
         rooms = new CopyOnWriteArrayList<Integer>();
         players = new CopyOnWriteArrayList<Player>();
-
+        showedCardsNumber = 0;
     }
 }
