@@ -5,12 +5,9 @@ import java.awt.event.*;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PipedOutputStream;
-import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
 
 class DrawComponent extends JPanel {
 
@@ -211,6 +208,7 @@ class UserInterface implements Runnable {
         layout.setConstraints(startButton,constraints);
 
         startButton.addMouseListener(new MouseAdapter() {
+            @SuppressWarnings("deprecation")
             @Override
             public void mouseClicked(MouseEvent e) {
                 p1.hide();
@@ -259,6 +257,7 @@ class UserInterface implements Runnable {
         layout.setConstraints(pane,constraints);
 
         list.addMouseListener(new MouseAdapter() {
+            @SuppressWarnings("deprecation")
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(e.getClickCount()>=2) {
@@ -429,7 +428,7 @@ class UserInterface implements Runnable {
 
         frame.add(p1, BorderLayout.CENTER);
 
-        Rectangle workArea = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        // Rectangle workArea = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 
         frame.setBounds(300,100,1024, 600);
 
