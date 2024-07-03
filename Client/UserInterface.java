@@ -199,6 +199,8 @@ class UserInterface implements Runnable {
         drawComponent.add(titleLabel);
         layout.setConstraints(titleLabel, constraints);
 
+
+        /*
         JTextField nameField = new JTextField("Your Name");
         nameField.setForeground(Color.LIGHT_GRAY);
         nameField.setBackground(foreColor);
@@ -232,7 +234,7 @@ class UserInterface implements Runnable {
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         drawComponent.add(nameField);
         layout.setConstraints(nameField, constraints);
-
+         */
         JButton startButton = new JButton("Start!");
         startButton.setForeground(bgColor);
         startButton.setFocusable(false);
@@ -257,7 +259,6 @@ class UserInterface implements Runnable {
                 p1.hide();
                 frame.add(p2, BorderLayout.CENTER);
                 frame.remove(p1);
-                System.out.println(nameField.getText());
             }
         });
 
