@@ -1,8 +1,10 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.RoundRectangle2D;
 import java.io.DataOutputStream;
 import java.io.PipedOutputStream;
+import java.util.Arrays;
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
@@ -29,8 +31,7 @@ class DrawComponent extends JPanel {
                 repaint();
             }
         });
-        if(motion)
-        {
+        if (motion) {
             timer = new Timer(20, new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     repaint();
@@ -69,48 +70,66 @@ class DrawComponent extends JPanel {
     }
 }
 
-class GameComponent extends DrawComponent{
+class Card {
+
+    public int color, value;
+
+    public Card(int x, int y) {
+        color = x;
+        value = y;
+    }
+}
+
+class GameComponent extends DrawComponent {
+
     public static int playerNumber = 10;
     public static String[] playerName = new String[10];
+
     public GameComponent() {
         super(false);
         //init sth
     }
 
-    public Point intersect(int pid,Point delta)
-    {
-        Point p = new Point(0,0);
+    public Point intersect(int pid, Point delta) {
+        Point p = new Point(0, 0);
 
         int width = this.getWidth();
         int height = this.getHeight();
 
-        double midW = width/2.0;
-        double midH = height/2.0;
-        
-        double theta = Math.atan(((double)width)/height);
+        double midW = width / 2.0;
+        double midH = height / 2.0;
 
-        double gamma = pid*2.0*Math.PI/playerNumber;
+        double theta = Math.atan(((double) width) / height);
+
+        double gamma = pid * 2.0 * Math.PI / playerNumber;
 
         //System.out.println(gamma);
-
-        if(gamma <= theta || gamma >= 2.0*Math.PI-theta)
-        {
-            p = new Point((int)(midW - Math.tan(gamma) * midH-delta.x/2.0),height);
-        }
-        else if(gamma <= Math.PI - theta)
-        {
-            p = new Point(0,(int)(midH + Math.tan(Math.PI/2.0-gamma) * midW + delta.y/2.0));
-        }
-        else if(gamma <= theta + Math.PI)
-        {
-            p = new Point((int)(midW + Math.tan(gamma) * midH - delta.x/2.0),delta.y);
-        }
-        else
-        {
-            p = new Point(width-delta.x,(int)(midH - Math.tan(Math.PI/2.0-gamma) * midW +delta.y/2.0));
+        if (gamma <= theta || gamma >= 2.0 * Math.PI - theta) {
+            p = new Point((int) (midW - Math.tan(gamma) * midH - delta.x / 2.0), height);
+        } else if (gamma <= Math.PI - theta) {
+            p = new Point(0, (int) (midH + Math.tan(Math.PI / 2.0 - gamma) * midW + delta.y / 2.0));
+        } else if (gamma <= theta + Math.PI) {
+            p = new Point((int) (midW + Math.tan(gamma) * midH - delta.x / 2.0), delta.y);
+        } else {
+            p = new Point(width - delta.x, (int) (midH - Math.tan(Math.PI / 2.0 - gamma) * midW + delta.y / 2.0));
         }
 
         return p;
+    }
+    public static java.util.List<String> cardString = Arrays.asList("0", "0", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A");
+    public static java.util.List<Color> decorColor = Arrays.asList(Color.BLACK, Color.RED, Color.BLACK, Color.RED);
+
+    public void paintPocker(Graphics2D g, Point p, Card c) {
+        // 创建圆角矩形，参数依次为x, y, width, height, arcWidth, arcHeight
+        RoundRectangle2D roundRect = new RoundRectangle2D.Double(p.x, p.y, 54, 86, 5, 5);
+        g.setColor(Color.WHITE);
+        g.fill(roundRect);
+
+        g.setColor(decorColor.get(c.color));
+        g.setFont(new Font(Font.SERIF, Font.BOLD, 33 - 3 * cardString.get(c.value).length()));
+        g.drawString(cardString.get(c.value), p.x + 11 - 6 * cardString.get(c.value).length(), p.y + 25);
+        g.setFont(new Font(Font.SERIF, Font.BOLD, 30));
+        g.drawString(decors.charAt(c.color) + "", p.x + 2, p.y + 50);
     }
 
     @Override
@@ -120,14 +139,14 @@ class GameComponent extends DrawComponent{
 
         g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
 
-
-        for(int i = 0; i<playerNumber; ++i)
-        {
-            Point pos = intersect(i,new Point(30,30));
-            g2d.drawString(i+"", pos.x, pos.y);
+        for (int i = 0; i < playerNumber; ++i) {
+            Point pos = intersect(i, new Point(30, 30));
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+            g2d.drawString(i + "", pos.x, pos.y);
+            paintPocker(g2d, pos, new Card(1, 10));
         }
-        
-        
+
     }
 }
 
@@ -160,8 +179,7 @@ class UserInterface implements Runnable {
         out = new DataOutputStream(pipe);
     }
 
-    public JPanel initializeUI1()
-    {
+    public JPanel initializeUI1() {
         DrawComponent drawComponent = new DrawComponent(true);
         drawComponent.setBackground(themeColor);
 
@@ -179,7 +197,7 @@ class UserInterface implements Runnable {
         constraints.weighty = 1.0;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         drawComponent.add(titleLabel);
-        layout.setConstraints(titleLabel,constraints);
+        layout.setConstraints(titleLabel, constraints);
 
         JTextField nameField = new JTextField("Your Name");
         nameField.setForeground(Color.LIGHT_GRAY);
@@ -189,31 +207,31 @@ class UserInterface implements Runnable {
         nameField.setHorizontalAlignment(SwingConstants.CENTER);
 
         nameField.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusGained(FocusEvent e) {
-                        if (nameField.getForeground()==Color.LIGHT_GRAY && nameField.getText().equals("Your Name")) {
-                            nameField.setText("");
-                            nameField.setForeground(bgColor);
-                        }
-                    }
-        
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        if (nameField.getText().isEmpty()) {
-                            nameField.setText("Your Name");
-                            nameField.setForeground(Color.LIGHT_GRAY);
-                        }
-                    }
-                });
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (nameField.getForeground() == Color.LIGHT_GRAY && nameField.getText().equals("Your Name")) {
+                    nameField.setText("");
+                    nameField.setForeground(bgColor);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (nameField.getText().isEmpty()) {
+                    nameField.setText("Your Name");
+                    nameField.setForeground(Color.LIGHT_GRAY);
+                }
+            }
+        });
 
         constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
-        constraints.insets=new Insets(0, 150, 0, 150);
+        constraints.insets = new Insets(0, 150, 0, 150);
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         drawComponent.add(nameField);
-        layout.setConstraints(nameField,constraints);
+        layout.setConstraints(nameField, constraints);
 
         JButton startButton = new JButton("Start!");
         startButton.setForeground(bgColor);
@@ -227,10 +245,10 @@ class UserInterface implements Runnable {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.weightx = 2.0;
         constraints.weighty = 2.0;
-        constraints.insets=new Insets(0, 150, 0, 150);
+        constraints.insets = new Insets(0, 150, 0, 150);
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         drawComponent.add(startButton);
-        layout.setConstraints(startButton,constraints);
+        layout.setConstraints(startButton, constraints);
 
         startButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -245,8 +263,7 @@ class UserInterface implements Runnable {
         return drawComponent;
     }
 
-    public JPanel initializeUI2()
-    {
+    public JPanel initializeUI2() {
         DrawComponent drawComponent = new DrawComponent(true);
         drawComponent.setBackground(themeColor);
 
@@ -260,7 +277,7 @@ class UserInterface implements Runnable {
         listModel.addElement("item 3");
         listModel.addElement("item 4");
         listModel.addElement("item 5");
- 
+
         // 创建JList组件并设置模型
         JList<String> list = new JList<>(listModel);
         list.setForeground(bgColor);
@@ -273,15 +290,15 @@ class UserInterface implements Runnable {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 7.0;
         constraints.weighty = 7.0;
-        constraints.insets=new Insets(70, 150, 70, 150);
+        constraints.insets = new Insets(70, 150, 70, 150);
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         drawComponent.add(pane);
-        layout.setConstraints(pane,constraints);
+        layout.setConstraints(pane, constraints);
 
         list.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount()>=2) {
+                if (e.getClickCount() >= 2) {
                     p2.hide();
                     frame.add(p3, BorderLayout.CENTER);
                     frame.remove(p2);
@@ -302,10 +319,10 @@ class UserInterface implements Runnable {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.weightx = 2.0;
         constraints.weighty = 2.0;
-        constraints.insets=new Insets(0, 150, 0, 150);
+        constraints.insets = new Insets(0, 150, 0, 150);
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         drawComponent.add(startButton);
-        layout.setConstraints(startButton,constraints);
+        layout.setConstraints(startButton, constraints);
 
         startButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -317,8 +334,7 @@ class UserInterface implements Runnable {
         return drawComponent;
     }
 
-    public JPanel initializeUI3()
-    {
+    public JPanel initializeUI3() {
         GameComponent gameComponent = new GameComponent();
         gameComponent.setBackground(themeColor);
         return gameComponent;
@@ -331,7 +347,6 @@ class UserInterface implements Runnable {
         frame.setUndecorated(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        
         JPanel titleBar = new JPanel(new BorderLayout());
         titleBar.setBackground(bgColor);
         titleBar.setPreferredSize(new Dimension(0, 70));
@@ -350,7 +365,6 @@ class UserInterface implements Runnable {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(bgColor);
-
 
         JButton minimizeButton = new JButton("-");
         minimizeButton.setFocusable(false);
@@ -376,15 +390,13 @@ class UserInterface implements Runnable {
         maximizeButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if(maximizeButton.getText()=="O")
-                {
-                    lastBound=frame.getBounds();
+                if (maximizeButton.getText() == "O") {
+                    lastBound = frame.getBounds();
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                     Rectangle workArea = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-                    frame.setBounds(0,workArea.y,screenSize.width,screenSize.height);
+                    frame.setBounds(0, workArea.y, screenSize.width, screenSize.height);
                     maximizeButton.setText("=");
-                }
-                else{
+                } else {
                     frame.setBounds(lastBound);
                     maximizeButton.setText("O");
                 }
@@ -399,7 +411,7 @@ class UserInterface implements Runnable {
                 p.translate(e.getX() - UserInterface.dragPoint.x, e.getY() - UserInterface.dragPoint.y);
                 frame.setLocation(p);
                 titleBar.requestFocus();
-                if(maximizeButton.getText()!="O") {
+                if (maximizeButton.getText() != "O") {
                     frame.setBounds(lastBound);
                     maximizeButton.setText("O");
                 }
@@ -434,7 +446,7 @@ class UserInterface implements Runnable {
 
         Rectangle workArea = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 
-        frame.setBounds(300,100,1024, 600);
+        frame.setBounds(300, 100, 1024, 600);
 
         frame.setVisible(true);
     }
