@@ -209,7 +209,7 @@ class Game {
       int cnt=0;
       for(User u : r.users){
         u.enterGame();
-        try{ u.sendStatus(); } catch(IOException e) {}
+        try{ u.in.readInt(); u.in.readInt(); u.sendStatus(); } catch(IOException e) {}
         players[cnt++]=new Player(u);
       }
       randomShuffle(players,n);
@@ -295,7 +295,8 @@ class Game {
         }
       } catch(IOException e) {}
     }
-
+    
+    sendBetAndPot(pot,-1);
     pot+=preflop_betting_round();
     sendBetAndPot(pot,-1);
     sendOpenMsg();
@@ -349,6 +350,9 @@ class Game {
     for(int i=0;i<n;++i){
       try{
         players[i].u.out.writeInt(0);
+        System.out.println("i="+i);
+        System.out.println("opt_player="+opt_player);
+        System.out.println("send: "+(i==opt_player));
         players[i].u.out.writeBoolean(i==opt_player);
         players[i].u.out.writeInt(pot);
         for(int j=0;j<n;++j){
@@ -358,15 +362,17 @@ class Game {
         }
       } catch(IOException e) {}
     }
+    System.out.println("send bet and pot");
   }
   private int preflop_betting_round(){
-    int max_bet = 2*MIN_BETS, pot = 0, min_bet = 0;
+    int max_bet = MIN_BETS, pot = 0, min_bet = 0;
     clearBet();
     getActiveNumber();
     for(int i=(active_number>2?getNext(dealer):dealer),j=0;;i=getNext(i)){
       if(players[i].folded) continue;
-      if (j==0) {pot += players[i].bets(MIN_BETS); ++j;}
-      else if(j==1) {pot += players[i].bets(MIN_BETS*2); ++j;}
+      System.out.println("player "+i+" 's turn");
+      if (j==0) {pot += players[i].bets(MIN_BETS); ++j; sendBetAndPot(pot, -1);}
+      else if(j==1) {pot += players[i].bets(MIN_BETS*2); ++j; sendBetAndPot(pot, -1);}
       else {
         sendBetAndPot(pot,i);
         pot += players[i].recvMoney();
@@ -451,7 +457,7 @@ class Player {
     money = INIT_MONEY;
     active = true;
     try {
-      u.userSocket.setSoTimeout(10000); // 10 seconds
+      u.userSocket.setSoTimeout(20000); // 10 seconds
     } catch(SocketException e){
       active = false;
     }
@@ -502,12 +508,15 @@ class Player {
     try {
       int st = u.in.readInt();
       if(st!=-2){
+        System.err.println("invalid state of "+this+"\n expected -2 read "+st);
         active = false;
         return 0;
       }
       int res = u.in.readInt();
+      System.out.println("bets = "+res);
       return bets(res);
     } catch(IOException e) {
+      System.err.println("cannot get money from "+this);
       active = false;
       return 0;
     }
