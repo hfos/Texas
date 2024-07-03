@@ -28,7 +28,8 @@ class Player {
     public String name;
     public boolean folded;
 
-    public Player(){}
+    public Player() {
+    }
 }
 
 public class Data {
@@ -48,5 +49,6 @@ public class Data {
         rooms = new CopyOnWriteArrayList<Integer>();
         players = new CopyOnWriteArrayList<Player>();
         showedCardsNumber = 0;
+        playerNumber = 0;
     }
 }
