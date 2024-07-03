@@ -407,11 +407,11 @@ class UserInterface implements Runnable {
                     if (data.playerNumber < 2 || data.playerNumber > 10) {
                         titleLabel.setText("<html>Player Count:  " + data.readyNumber + " / <font color='red'>" + data.playerNumber + "</font></html>");
                     } else {
-                        if (data.playerNumber == data.readyNumber) {
-                            ChangeStatus(p3, p4);
-                        }
                         titleLabel.setText("<html>Player Count:  " + data.readyNumber + " / " + data.playerNumber + "</html>");
                     }
+                }
+                if (data.status == 3) {
+                    ChangeStatus(p3, p4);
                 }
             }
         });
@@ -462,8 +462,7 @@ class UserInterface implements Runnable {
             b1.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    System.out.println(b1.getText());
-                }
+                    out.writeInt(Integer.parseInt(b1.getText()));
             });
         }
 
