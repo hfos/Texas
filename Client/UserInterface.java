@@ -182,8 +182,8 @@ class GameComponent extends DrawComponent {
             g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
             g2d.drawString(i + "", pos.x, pos.y);
             pos = intersectCenter(i, new Point(94, 86));
-            paintPocker(g2d, new Point(pos.x - 20, pos.y), data.players.get(i).c1, i == data.myPos);
-            paintPocker(g2d, new Point(pos.x + 20, pos.y), data.players.get(i).c2, i == data.myPos);
+            paintPocker(g2d, new Point(pos.x - 20, pos.y), data.players.get(i).c1, i == data.myPos || data.showAll);
+            paintPocker(g2d, new Point(pos.x + 20, pos.y), data.players.get(i).c2, i == data.myPos || data.showAll);
         }
 
     }
