@@ -76,11 +76,21 @@ class GameComponent extends DrawComponent {
     public static Data data;
     public static int playerNumber = 5;
 
+    public static long lastAction = -10000;
+    Timer anotherTimer;
+
     public GameComponent() {
         super(false);
         //init sth
         data = UserInterface.data;
         playerNumber = data.playerNumber;
+
+        anotherTimer = new Timer(500, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                repaint();
+            }
+        });
+        anotherTimer.start();
 
     }
 
@@ -176,13 +186,13 @@ class GameComponent extends DrawComponent {
 
         for (int i = 0; i < playerNumber; ++i) {
             String txt = "$" + data.players.get(i).money + "  ⊙" + data.players.get(i).bet;
-            Point pos = intersectCenter(i, new Point(200, 200));
+            Point pos = intersectCenter((i + playerNumber - data.myPos) % playerNumber, new Point(200, 200));
             pos.x -= 10 * txt.length();
             pos.y += 10;
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
             g2d.drawString(txt, pos.x, pos.y);
-            pos = intersectCenter(i, new Point(94, 86));
+            pos = intersectCenter((i + playerNumber - data.myPos) % playerNumber, new Point(94, 86));
             paintPocker(g2d, new Point(pos.x - 20, pos.y), data.players.get(i).c1, i == data.myPos || data.showAll);
             paintPocker(g2d, new Point(pos.x + 20, pos.y), data.players.get(i).c2, i == data.myPos || data.showAll);
         }
@@ -191,8 +201,14 @@ class GameComponent extends DrawComponent {
         int height = this.getHeight();
 
         for (int i = 0; i < 5; ++i) {
-            paintPocker(g2d, new Point(width / 2 - 50 + 20 * i, height / 2 - 20), data.publicCards.cards[i], i < data.showedCardsNumber);
+            paintPocker(g2d, new Point(width / 2 - 40 + 20 * i, height / 2 - 100), data.publicCards.cards[i], i < data.showedCardsNumber || data.showAll);
         }
+
+        g2d.setColor(Color.ORANGE);
+        g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+
+        String txt = "⊙" + data.pot;
+        g2d.drawString(txt, width / 2 - 10 * txt.length(), height / 2 - 20);
 
     }
 }
@@ -343,7 +359,6 @@ class UserInterface implements Runnable {
         GridBagLayout layout = new GridBagLayout();
         drawComponent.setLayout(layout);
 
-        // 创建列表模型，使用数组作为数据源
         DefaultListModel<String> listModel = new DefaultListModel<>();
 
         timer = new Timer(700, new ActionListener() {
@@ -363,14 +378,13 @@ class UserInterface implements Runnable {
         });
         timer.start();
 
-        // 创建JList组件并设置模型
         JList<String> list = new JList<>(listModel);
         list.setForeground(bgColor);
         list.setFocusable(false);
         list.setBackground(foreColor);
         list.setFont(new Font(Font.MONOSPACED, Font.BOLD, 54));
         JScrollPane pane = new JScrollPane(list);
-        // 将列表添加到窗口中
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 7.0;
