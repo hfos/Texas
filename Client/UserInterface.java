@@ -504,17 +504,6 @@ class UserInterface implements Runnable {
         GameComponent gameComponent = new GameComponent();
         gameComponent.setBackground(themeColor);
 
-        for (int i = 1; i < 10; ++i) {
-            JButton b1 = new JButton("" + i);
-            gameComponent.add(b1);
-            b1.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    try {out.writeInt(10*Integer.parseInt(b1.getText()));}
-                    catch(IOException err) {}
-                }
-            });
-        }
         return gameComponent;
     }
 
