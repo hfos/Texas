@@ -462,7 +462,8 @@ class UserInterface implements Runnable {
             b1.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    out.writeInt(Integer.parseInt(b1.getText()));
+                    try {out.writeInt(Integer.parseInt(b1.getText()));}
+                    catch(IOException err) {}
                 }
             });
         }
