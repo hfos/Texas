@@ -18,7 +18,7 @@ public class Client {
       socket = new Socket(SERVER_IP, SERVER_PORT);
       webOut = new DataOutputStream(socket.getOutputStream());
       webIn = new DataInputStream(socket.getInputStream());
-      socket.setSoTimeout(2000);
+      socket.setSoTimeout(200000);
     } catch (IOException e) {
       System.err.println("Cannot connect to the server");
       return;
@@ -122,6 +122,7 @@ public class Client {
   }
 
   static void game() {
+    System.out.println("enter game");
     data.myPos = webReadInt();
     webReadInt();
     while (true) {
@@ -130,17 +131,21 @@ public class Client {
     return;
   }
   static boolean round(){   // return true when game over
+    System.out.println("Enter round");
     data.pot = 0;
     data.showedCardsNumber = 0;
     data.dealer = webReadInt();
     Card a = webReadCard(), b = webReadCard(), c = webReadCard(), d = webReadCard(), e = webReadCard();
     data.publicCards = new CardGroup5(a,b,c,d,e);
     for(int i=0;i<data.playerNumber;++i){
+      data.players.add(new Player());
       data.players.get(i).c1 = webReadCard();
       data.players.get(i).c2 = webReadCard();
     }
+    System.out.println("Read all informations");
     while(true) {
       int x = webReadBetAndPot();
+      System.out.println("x = "+x);
       if(x==114514+0) return false; //next round
       else if(x==114514+1) return true; //game over
       else if(x==114514+2) openPublicCard();

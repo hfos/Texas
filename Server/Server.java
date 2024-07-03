@@ -20,9 +20,7 @@ public class Server {
     Thread debugThread = new Thread(()->{
       while(true){
         try{Thread.sleep(3000);}catch(InterruptedException e){}
-        System.out.println("hall "+users.size());
-        System.out.println("room "+rooms.size());
-        System.out.println(rooms);
+        System.out.println(games);
       }
     });
     debugThread.start();

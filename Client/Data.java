@@ -28,14 +28,7 @@ class Player {
     public String name;
     public boolean folded;
 
-    public Player(Card C1, Card C2, int Money, int Bet, boolean Ready, String Name, boolean Folded) {
-        c1 = C1;
-        c2 = C2;
-        money = Money;
-        bet = Bet;
-        name = Name;
-        folded = Folded;
-    }
+    public Player(){}
 }
 
 public class Data {
