@@ -463,6 +463,7 @@ class UserInterface implements Runnable {
                 @Override
                 public void mousePressed(MouseEvent e) {
                     out.writeInt(Integer.parseInt(b1.getText()));
+                }
             });
         }
 
