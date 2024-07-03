@@ -215,6 +215,9 @@ class Game {
         players[cnt++]=new Player(u);
       }
       randomShuffle(players,n);
+      for(int i=0;i<n;++i) {
+        players[i].u.writeInt();
+      }
     }
     Thread gameThread = new Thread(()->{game();});
     gameThread.start();
