@@ -167,6 +167,22 @@ class GameComponent extends DrawComponent {
         g.drawString(decors.charAt(c.color) + "", p.x + 2, p.y + 50);
     }
 
+    public void paintButton(Graphics2D g, Point p, int w, int h, String txt) {
+
+        RoundRectangle2D roundRect = new RoundRectangle2D.Double(p.x - w / 2, p.y - h / 2, w, h, 5, 5);
+        g.setColor(UserInterface.foreColor);
+        g.fill(roundRect);
+        g.setColor(Color.LIGHT_GRAY);
+        g.setStroke(new BasicStroke(4f));
+        g.draw(roundRect);
+
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 35));
+        g.setColor(UserInterface.bgColor);
+
+        g.drawString(txt, p.x - 8 * txt.length(), p.y + 10);
+
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -183,6 +199,11 @@ class GameComponent extends DrawComponent {
             g2d.drawString(i + "", pos.x, pos.y);
             paintPocker(g2d, intersectCenter(i, new Point(54, 86)), new Card(1, 10), i == 0);
         }
+
+        int width = this.getWidth();
+        int height = this.getHeight();
+
+        paintButton(g2d, new Point(width / 2, height / 2), 300, 70, "Fold/Check");
 
     }
 }

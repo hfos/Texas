@@ -10,10 +10,11 @@ import java.util.*;
 
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.xml.transform.Templates;
 
 class DrawComponent extends JPanel {
 
-    Timer timer;
+    public Timer timer;
 
     int delta = 120;
 
@@ -34,13 +35,13 @@ class DrawComponent extends JPanel {
                 repaint();
             }
         });
+        timer = new Timer(20, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                repaint();
+                delta = (delta + 7) % 240;
+            }
+        });
         if (motion) {
-            timer = new Timer(20, new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    repaint();
-                    delta = (delta + 7) % 240;
-                }
-            });
             timer.start();
         }
         repaint();
@@ -82,8 +83,11 @@ class GameComponent extends DrawComponent {
     public static Data data;
     public static int playerNumber = 5;
 
-    public static long lastAction = -10000;
+    public static volatile int raiseMoney = 0;
+
     Timer anotherTimer;
+
+    public ArrayList<JButton> buttons = new ArrayList<JButton>();
 
     public GameComponent() {
         super(false);
@@ -165,6 +169,7 @@ class GameComponent extends DrawComponent {
         g.setColor(Color.WHITE);
         g.fill(roundRect);
         g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(1));
         g.draw(roundRect);
 
         if (vis == false) {
@@ -212,7 +217,7 @@ class GameComponent extends DrawComponent {
         int height = this.getHeight();
 
         for (int i = 0; i < 5; ++i) {
-            paintPocker(g2d, new Point(width / 2 - 40 + 20 * i, height / 2 - 100), data.publicCards.cards[i], i < data.showedCardsNumber || data.showAll);
+            paintPocker(g2d, new Point(width / 2 - 80 + 40 * i, height / 2 - 100), data.publicCards.cards[i], i < data.showedCardsNumber || data.showAll);
         }
 
         g2d.setColor(Color.ORANGE);
@@ -221,6 +226,33 @@ class GameComponent extends DrawComponent {
         String txt = "⊙" + data.pot;
         g2d.drawString(txt, width / 2 - 10 * txt.length(), height / 2 - 20);
 
+        int totalWidth = (buttons.size() - 1) * 10;
+
+        for (int i = 0; i < buttons.size(); ++i) {
+            JButton bb = buttons.get(i);
+            Dimension dd = bb.getSize();
+            totalWidth += dd.width;
+        }
+
+        int bg = -totalWidth / 2;
+
+        for (int i = 0; i < buttons.size(); ++i) {
+            JButton bb = buttons.get(i);
+            Dimension dd = bb.getSize();
+            if (data.myTurn) {
+                bb.setLocation(width / 2 + bg, height / 2 + 40 - dd.height / 2);
+                bg += dd.width + 10;
+            } else {
+                bb.setLocation(-114514, -1919810);
+            }
+        }
+
+        if (!data.myTurn) {
+            raiseMoney = 0;
+            buttons.get(4).setText("<html>Raise<br>+0</html>");
+        }
+
+        //System.out.println("is it my turn? " + data.myTurn);
     }
 }
 
@@ -259,6 +291,19 @@ class UserInterface implements Runnable {
         p2 = initializeUI2();
         p3 = initializeUI3();
         p4 = initializeUI4();
+    }
+
+    public int calculateMaxBet() {
+        int maxbet = -1;
+        int playerNumber = data.playerNumber;
+        for (int i = 0; i < playerNumber; ++i) {
+            maxbet = Math.max(maxbet, data.players.get(i).bet);
+        }
+        return maxbet;
+    }
+
+    public int calculateMyBet() {
+        return data.players.get(data.myPos).bet;
     }
 
     @SuppressWarnings("deprecation")
@@ -372,7 +417,7 @@ class UserInterface implements Runnable {
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
 
-        timer = new Timer(700, new ActionListener() {
+        timer = new Timer(1200, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (data.status == 0) {
                     listModel.clear();
@@ -409,20 +454,20 @@ class UserInterface implements Runnable {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    //System.out.println(list.getSelectedValue());
-                    String S = list.getSelectedValue();
-                    if (S == null) {
-                        return;
-                    }
-                    int tmp = Integer.parseInt(S.split("#")[1]);
-                    ChangeStatus(p2, p3);
-                    //System.out.println(tmp);
                     try {
-                        out.writeInt(tmp);
-                        out.writeInt(-1);
-                    } catch (IOException err) {
-                        System.out.println("Error: Entering room failed.");
-                        System.exit(1);
+                        String S = new String(list.getSelectedValue().toCharArray());
+                        int tmp = Integer.parseInt(S.split("#")[1]);
+                        ChangeStatus(p2, p3);
+                        //System.out.println(tmp);
+                        try {
+                            out.writeInt(tmp);
+                            out.writeInt(-1);
+                        } catch (IOException err) {
+                            System.out.println("Error: Entering room failed.");
+                            System.exit(1);
+                        }
+                    } catch (NullPointerException err) {
+                        System.out.println("unexpected null pointer in mouseClicked()");
                     }
                 }
             }
@@ -536,6 +581,151 @@ class UserInterface implements Runnable {
     public DrawComponent initializeUI4() {
         GameComponent gameComponent = new GameComponent();
         gameComponent.setBackground(themeColor);
+
+        JButton foldButton = new JButton("Fold/Check");
+        foldButton.setForeground(bgColor);
+        foldButton.setFocusable(false);
+        foldButton.setBackground(foreColor);
+        foldButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+        foldButton.setSize(0, 60);
+        foldButton.setHorizontalAlignment(SwingConstants.CENTER);
+        foldButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                try {
+                    out.writeInt(0);
+                } catch (IOException ex) {
+                }
+            }
+        });
+        gameComponent.add(foldButton);
+
+        JButton checkButton = new JButton("Check/Call");
+        checkButton.setForeground(bgColor);
+        checkButton.setFocusable(false);
+        checkButton.setBackground(foreColor);
+        checkButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+        checkButton.setSize(0, 60);
+        checkButton.setHorizontalAlignment(SwingConstants.CENTER);
+        checkButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                try {
+                    out.writeInt(calculateMaxBet() - calculateMyBet());
+                } catch (IOException ex) {
+                }
+            }
+        });
+        gameComponent.add(checkButton);
+
+        JButton raiseButton = new JButton("<html>Raise<br>+0</html>");
+        raiseButton.setForeground(bgColor);
+        raiseButton.setFocusable(false);
+        raiseButton.setBackground(foreColor);
+        raiseButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+        raiseButton.setSize(0, 60);
+        raiseButton.setHorizontalAlignment(SwingConstants.CENTER);
+        raiseButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                try {
+                    out.writeInt(calculateMaxBet() - calculateMyBet() + GameComponent.raiseMoney);
+                } catch (IOException ex) {
+                }
+            }
+        });
+        gameComponent.add(raiseButton);
+
+        JButton d50Button = new JButton("-50");
+        d50Button.setForeground(bgColor);
+        d50Button.setFocusable(false);
+        d50Button.setBackground(foreColor);
+        d50Button.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+        d50Button.setSize(0, 60);
+        d50Button.setHorizontalAlignment(SwingConstants.CENTER);
+        d50Button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                GameComponent.raiseMoney = Math.max(0, GameComponent.raiseMoney - 50);
+                raiseButton.setText("<html>Raise<br>+" + GameComponent.raiseMoney + "</html>");
+            }
+        });
+        gameComponent.add(d50Button);
+
+        JButton d5Button = new JButton("-5");
+        d5Button.setForeground(bgColor);
+        d5Button.setFocusable(false);
+        d5Button.setBackground(foreColor);
+        d5Button.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+        d5Button.setSize(0, 60);
+        d5Button.setHorizontalAlignment(SwingConstants.CENTER);
+        d5Button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                GameComponent.raiseMoney = Math.max(0, GameComponent.raiseMoney - 5);
+                raiseButton.setText("<html>Raise<br>+" + GameComponent.raiseMoney + "</html>");
+            }
+        });
+        gameComponent.add(d5Button);
+
+        JButton a5Button = new JButton("+5");
+        a5Button.setForeground(bgColor);
+        a5Button.setFocusable(false);
+        a5Button.setBackground(foreColor);
+        a5Button.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+        a5Button.setSize(0, 60);
+        a5Button.setHorizontalAlignment(SwingConstants.CENTER);
+        a5Button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                GameComponent.raiseMoney = Math.max(0, GameComponent.raiseMoney + 5);
+                raiseButton.setText("<html>Raise<br>+" + GameComponent.raiseMoney + "</html>");
+            }
+        });
+        gameComponent.add(a5Button);
+
+        JButton a50Button = new JButton("+50");
+        a50Button.setForeground(bgColor);
+        a50Button.setFocusable(false);
+        a50Button.setBackground(foreColor);
+        a50Button.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+        a50Button.setSize(0, 60);
+        a50Button.setHorizontalAlignment(SwingConstants.CENTER);
+        a50Button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                GameComponent.raiseMoney = Math.max(0, GameComponent.raiseMoney + 50);
+                raiseButton.setText("<html>Raise<br>+" + GameComponent.raiseMoney + "</html>");
+            }
+        });
+        gameComponent.add(a50Button);
+
+        JButton allinButton = new JButton("Allin");
+        allinButton.setForeground(bgColor);
+        allinButton.setFocusable(false);
+        allinButton.setBackground(foreColor);
+        allinButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 24));
+        allinButton.setSize(0, 60);
+        allinButton.setHorizontalAlignment(SwingConstants.CENTER);
+        allinButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                try {
+                    out.writeInt(-1);
+                } catch (IOException ex) {
+                }
+            }
+        });
+        gameComponent.add(allinButton);
+
+        gameComponent.buttons.add(foldButton);
+        gameComponent.buttons.add(checkButton);
+        gameComponent.buttons.add(d50Button);
+        gameComponent.buttons.add(d5Button);
+        gameComponent.buttons.add(raiseButton);
+        gameComponent.buttons.add(a5Button);
+        gameComponent.buttons.add(a50Button);
+        gameComponent.buttons.add(allinButton);
 
         return gameComponent;
     }
