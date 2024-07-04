@@ -168,6 +168,7 @@ class Room {
             if(y==2) {user.Ready(); ++ready_num;}
             else {user.enterRoom();}
           } catch(IOException e){
+            user.status = -1;
           }
         }
         it = users.iterator();
@@ -178,7 +179,13 @@ class Room {
             user.out.writeInt(num);
             user.out.writeInt(ready_num);
           } catch(IOException e){
+            user.status = -1;
           }
+        }
+        it = users.iterator();
+        while(it.hasNext()){
+          User user = it.next();
+          if(user.status==-1) it.remove();
         }
         if(ready_num>=num&&num>1){
           break OUT;
