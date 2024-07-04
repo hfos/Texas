@@ -20,7 +20,7 @@ public class Server {
     Thread debugThread = new Thread(()->{
       while(true){
         try{Thread.sleep(3000);}catch(InterruptedException e){}
-        System.out.println(games);
+        // System.out.println(games);
       }
     });
     debugThread.start();
@@ -297,7 +297,7 @@ class Game {
     }
     
     sendBetAndPot(pot,-1);
-    pot+=preflop_betting_round();
+    pot+=preflop_betting_round(pot);
     sendBetAndPot(pot,-1);
     sendOpenMsg();
     sendOpenMsg();
@@ -306,21 +306,21 @@ class Game {
       roundEnd(pot);
       return;
     }
-    pot+=betting_round();
+    pot+=betting_round(pot);
     sendBetAndPot(pot,-1);
     sendOpenMsg();
     if(getFoldNumber()+1==getActiveNumber()){
       roundEnd(pot);
       return;
     }
-    pot+=betting_round();
+    pot+=betting_round(pot);
     sendBetAndPot(pot,-1);
     sendOpenMsg();
     if(getFoldNumber()+1==getActiveNumber()){
       roundEnd(pot);
       return;
     }
-    pot+=betting_round();
+    pot+=betting_round(pot);
     sendBetAndPot(pot,-1);
     if(getFoldNumber()+1==getActiveNumber()){
       roundEnd(pot);
@@ -360,7 +360,7 @@ class Game {
       } catch(IOException e) {}
     }
   }
-  private int preflop_betting_round(){
+  private int preflop_betting_round(int prepot){
     int max_bet = MIN_BETS, pot = 0, check_cnt = 0;
     clearBet();
     getActiveNumber();
@@ -368,9 +368,9 @@ class Game {
       System.out.println("");
       System.out.println("player "+i+" turn");
       if(players[i].folded) continue;
-      if(jj==0) {pot+=players[i].bets(MIN_BETS); jj=1; sendBetAndPot(pot, -1);}
-      else if(jj==1) {pot+=players[i].bets(MIN_BETS*2); jj=2; sendBetAndPot(pot, -1);}
-      else { sendBetAndPot(pot, i); pot += players[i].recvMoney();}
+      if(jj==0) {pot+=players[i].bets(MIN_BETS); jj=1; sendBetAndPot(pot+prepot, -1);}
+      else if(jj==1) {pot+=players[i].bets(MIN_BETS*2); jj=2; sendBetAndPot(pot+prepot, -1);}
+      else { sendBetAndPot(pot+prepot, i); pot += players[i].recvMoney();}
       System.out.println("pot = "+pot);
       System.out.println("p0 bet = "+players[0].bets);
       System.out.println("p1 bet = "+players[1].bets);
@@ -388,17 +388,22 @@ class Game {
           flag=false;
       if(flag) break;
     }
-    System.out.println("round 1 end");
+    System.out.println("betting round 1 end");
     return pot;
   }
-  private int betting_round(){
+  private int betting_round(int prepot){
     int max_bet = 0, pot = 0, check_cnt = 0;
     clearBet();
     getActiveNumber();
     for(int i=getNext(dealer);;i=getNext(i)){
+      System.out.println("");
+      System.out.println("player "+i+" turn");
       if(players[i].folded) continue;
-      sendBetAndPot(pot, i);
+      sendBetAndPot(pot+prepot, i);
       pot += players[i].recvMoney();
+      System.out.println("pot = "+pot);
+      System.out.println("p0 bet = "+players[0].bets);
+      System.out.println("p1 bet = "+players[1].bets);
       if(max_bet==0&&players[i].bets==0) { 
         ++check_cnt;
         if(check_cnt+getFoldNumber()==getActiveNumber())
@@ -406,13 +411,14 @@ class Game {
         continue;
       }
       max_bet = max(max_bet,players[i].bets);
-      if(players[i].bets<=max_bet&&!players[i].allIn) players[i].fold();
+      if(players[i].bets<max_bet&&!players[i].allIn) players[i].fold();
       boolean flag = true;
       for(int j=0;j<n;++j)
         if(players[j].active&&!players[j].folded&&!players[j].allIn&&players[j].bets<max_bet)
           flag=false;
       if(flag) break;
     }
+    System.out.println("betting round end");
     return pot;
   }
   static int max(int x,int y){
@@ -473,7 +479,7 @@ class Player {
     money = INIT_MONEY;
     active = true;
     try {
-      u.userSocket.setSoTimeout(20000); // 10 seconds
+      u.userSocket.setSoTimeout(30000); // 20 seconds
     } catch(SocketException e){
       active = false;
     }

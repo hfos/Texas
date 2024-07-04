@@ -44,7 +44,7 @@ public class Data {
     public volatile int myPos;
     public volatile int dealer;
     public volatile int pot;
-    public volatile boolean myTurn;
+    public volatile boolean mygo;
     public volatile boolean showAll;
 
     public Data() {

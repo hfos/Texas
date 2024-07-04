@@ -122,17 +122,14 @@ public class Client {
     }
   }
 
-  static void showAll() {
-    data.showAll = true;
-  }
-
   static void game() {
     System.out.println("enter game");
     data.myPos = webReadInt();
     webReadInt();
     while (true) {
+      data.showAll = false;
       boolean res = round();
-      showAll();
+      data.showAll = true;
       try {
         Thread.sleep(2000);
       } catch (InterruptedException e) {
@@ -160,7 +157,7 @@ public class Client {
     while (true) {
       int x = webReadBetAndPot();
       System.out.println("x = " + x);
-      data.myTurn = false;
+      data.mygo = false;
       if (x == 114514 + 0) {
         return false; // next round
       } else if (x == 114514 + 1) {
@@ -178,7 +175,7 @@ public class Client {
   }
 
   static void sendOption() {
-    data.myTurn = true;
+    data.mygo = true;
     System.out.println("input opt in UI: ");
     System.out.println("my money " + data.players.get(data.myPos).money);
     int x = userReadInt();

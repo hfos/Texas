@@ -238,7 +238,7 @@ class GameComponent extends DrawComponent {
         for (int i = 0; i < buttons.size(); ++i) {
             JButton bb = buttons.get(i);
             Dimension dd = bb.getSize();
-            if (data.myTurn) {
+            if (data.mygo) {
                 bb.setLocation(width / 2 + bg, height / 2 + 40 - dd.height / 2);
                 bg += dd.width + 10;
             } else {
@@ -246,7 +246,7 @@ class GameComponent extends DrawComponent {
             }
         }
 
-        if (!data.myTurn) {
+        if (!data.mygo) {
             raiseMoney = 0;
             buttons.get(4).setText("<html>Raise: <font color = 'red'>+0</font></html>");
         }
