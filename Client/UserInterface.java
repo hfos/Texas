@@ -490,7 +490,7 @@ class UserInterface implements Runnable {
                             System.exit(1);
                         }
                     } catch (NullPointerException err) {
-                        System.out.println("unexpected null pointer in mouseClicked()");
+                        //System.out.println("unexpected null pointer in mouseClicked()");
                     }
                 }
             }
