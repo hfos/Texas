@@ -318,13 +318,16 @@ class UserInterface implements Runnable {
     public void ChangeStatus(DrawComponent p1, DrawComponent p2) {
         Component[] c = frame.getContentPane().getComponents();
         for (Component i : c) {
-            if (i == p2) {
-                return;
-            }
             if (i == p1) {
                 p1.interactive = false;
                 p1.hide();
                 frame.remove(p1);
+            }
+        }
+
+        for (Component i : c) {
+            if (i == p2) {
+                return;
             }
         }
         frame.add(p2);
