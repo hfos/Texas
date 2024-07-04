@@ -199,17 +199,21 @@ class GameComponent extends DrawComponent {
 
         playerNumber = data.playerNumber;
 
-        for (int i = 0; i < playerNumber; ++i) {
-            String txt = "$" + data.players.get(i).money + "  ⊙" + data.players.get(i).bet;
-            Point pos = intersectCenter((i + playerNumber - data.myPos) % playerNumber, new Point(200, 200));
-            pos.x -= 10 * txt.length();
-            pos.y += 10;
-            g2d.setColor(Color.WHITE);
-            g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
-            g2d.drawString(txt, pos.x, pos.y);
-            pos = intersectCenter((i + playerNumber - data.myPos) % playerNumber, new Point(94, 86));
-            paintPocker(g2d, new Point(pos.x - 20, pos.y), data.players.get(i).c1, i == data.myPos || data.showAll);
-            paintPocker(g2d, new Point(pos.x + 20, pos.y), data.players.get(i).c2, i == data.myPos || data.showAll);
+        for (int i = 0;; ++i) {
+            try {
+                String txt = "$" + data.players.get(i).money + "  ⊙" + data.players.get(i).bet;
+                Point pos = intersectCenter((i + playerNumber - data.myPos) % playerNumber, new Point(200, 200));
+                pos.x -= 10 * txt.length();
+                pos.y += 10;
+                g2d.setColor(Color.WHITE);
+                g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+                g2d.drawString(txt, pos.x, pos.y);
+                pos = intersectCenter((i + playerNumber - data.myPos) % playerNumber, new Point(94, 86));
+                paintPocker(g2d, new Point(pos.x - 20, pos.y), data.players.get(i).c1, i == data.myPos || data.showAll);
+                paintPocker(g2d, new Point(pos.x + 20, pos.y), data.players.get(i).c2, i == data.myPos || data.showAll);
+            } catch (Exception err) {
+                break;
+            }
         }
 
         int width = this.getWidth();
