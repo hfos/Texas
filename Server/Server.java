@@ -50,7 +50,7 @@ public class Server {
   static void handler(){
     while(true){
       try{Thread.sleep(100);}catch(InterruptedException e){}
-      synchronized(users){
+      synchronized(users){synchronized(rooms){
         Iterator<User> it = users.iterator();
         while(it.hasNext()){
           User user = it.next();
@@ -89,7 +89,7 @@ public class Server {
           } catch(IllegalStateException e){
           }
         }
-      }
+      }}
     }
   }
   static int createRoom(){
@@ -137,10 +137,8 @@ class User {
   }
   void sendRoomList() throws IOException{
     List<Integer> l = new ArrayList<>();
-    synchronized(Server.rooms){
-      for(Integer k : Server.rooms.keySet())
-        l.add(k);
-    }
+    for(Integer k : Server.rooms.keySet())
+      l.add(k);
     out.writeInt(l.size());
     for(int i=0;i<l.size();++i)
       out.writeInt(l.get(i));
