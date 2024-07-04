@@ -316,6 +316,11 @@ class UserInterface implements Runnable {
 
     @SuppressWarnings("deprecation")
     public void ChangeStatus(DrawComponent p1, DrawComponent p2) {
+        if (p2 == p3) {
+            JButton b = ((JButton) p3.getComponent(1));
+            b.setText("Ready!");
+            b.setEnabled(true);
+        }
         Component[] c = frame.getContentPane().getComponents();
         for (Component i : c) {
             if (i == p1) {
@@ -555,6 +560,7 @@ class UserInterface implements Runnable {
         timer.start();
 
         JButton startButton = new JButton("Ready!");
+
         startButton.setForeground(bgColor);
         startButton.setFocusable(false);
         startButton.setBackground(foreColor);
