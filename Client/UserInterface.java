@@ -196,9 +196,11 @@ class GameComponent extends DrawComponent {
         super.paintComponent(g);
 
         if (!interactive) {
+            //System.out.println("Game UI not interactive");
             return;
         }
 
+        //System.out.println("Game UI");
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
@@ -207,7 +209,9 @@ class GameComponent extends DrawComponent {
 
         for (int i = 0;; ++i) {
             try {
-                String txt = "$" + data.players.get(i).money + "  ⊙" + data.players.get(i).bet;
+                Player p = data.players.get(i);
+                //System.out.println("Player #" + i + " " + p);
+                String txt = "$" + p.money + "  ⊙" + p.bet;
                 Point pos = intersectCenter((i + playerNumber - data.myPos) % playerNumber, new Point(200, 200));
                 pos.x -= 10 * txt.length();
                 pos.y += 10;
@@ -317,6 +321,7 @@ class UserInterface implements Runnable {
 
     @SuppressWarnings("deprecation")
     public void ChangeStatus(DrawComponent p1, DrawComponent p2) {
+        //System.out.println("Change Status: " + p1 + " " + p2);
         if (p2 == p3) {
             JButton b = ((JButton) p3.getComponent(1));
             b.setText("Ready!");
@@ -333,6 +338,7 @@ class UserInterface implements Runnable {
 
         for (Component i : c) {
             if (i == p2) {
+                //System.out.println("Already in p2");
                 return;
             }
         }
