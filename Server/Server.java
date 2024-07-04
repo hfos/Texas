@@ -247,8 +247,10 @@ class Game {
     }
     sendGameEnd();
     synchronized(Server.users){
-      for(Player p : players)
+      for(Player p : players){
+        p.u.status = 0;
         Server.users.add(p.u);
+      }
     }
   }
   private void sendRoundBegin(){

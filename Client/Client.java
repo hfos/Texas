@@ -92,6 +92,7 @@ public class Client {
         return;
       }
       data.roomId = tryUserReadInt();
+      System.out.println("room id = " + data.roomId);
     }
   }
 
