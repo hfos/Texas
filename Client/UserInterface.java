@@ -95,8 +95,9 @@ class GameComponent extends DrawComponent {
         data = UserInterface.data;
         playerNumber = data.playerNumber;
 
-        anotherTimer = new Timer(100, new ActionListener() {
+        anotherTimer = new Timer(400, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                //System.out.println("Game UI Repaint");
                 repaint();
             }
         });
@@ -543,7 +544,7 @@ class UserInterface implements Runnable {
         drawComponent.add(titleLabel);
         layout.setConstraints(titleLabel, constraints);
 
-        timer = new Timer(100, new ActionListener() {
+        timer = new Timer(700, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (data.status == 1 || data.status == 2) {
                     if (data.playerNumber < 2 || data.playerNumber > 10) {
