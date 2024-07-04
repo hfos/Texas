@@ -50,8 +50,8 @@ public class Server {
   static void handler(){
     while(true){
       try{Thread.sleep(100);}catch(InterruptedException e){}
-      Iterator<User> it = users.iterator();
       synchronized(users){
+        Iterator<User> it = users.iterator();
         while(it.hasNext()){
           User user = it.next();
           try{
