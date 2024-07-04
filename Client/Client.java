@@ -61,6 +61,7 @@ public class Client {
           break;
         case 3:
           game();
+          break;
         default:
           break OUT;
       }
@@ -136,6 +137,7 @@ public class Client {
       }
       if (res) {
         data.status = 0;
+        data.roomId = 0;
         break;
       }
     }
