@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.util.*;
-import javax.lang.model.util.ElementScanner14;
 
 import javax.swing.*;
 import javax.swing.Timer;
