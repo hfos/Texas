@@ -135,6 +135,7 @@ public class Client {
       } catch (InterruptedException e) {
       }
       if (res) {
+        data.status = 0;
         break;
       }
     }
