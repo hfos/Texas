@@ -7,7 +7,7 @@ public class Server {
   final static int PORT = 8848;
   final static int MAX_ROOMS = 100;
   static ServerSocket serverSocket;
-  volatile static Set<User> users = new HashSet<User>();
+  volatile static Set<User> users = Collections.synchronizedSet(new HashSet<User>());
   volatile static Map<Integer,Room> rooms = new HashMap<Integer,Room>();
   static Set<Game> games = new HashSet<Game>();
   public static void main(String[] args){
@@ -148,7 +148,7 @@ class Room {
   Set<User> users;
   int roomId;
   public Room(int key){
-    users = new HashSet<User>();
+    users = Collections.synchronizedSet(new HashSet<User>());
     roomId = key;
     Thread handlerThread = new Thread(()->{handler();});
     handlerThread.start();
