@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.util.*;
+import javax.lang.model.util.ElementScanner14;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -321,12 +322,8 @@ class UserInterface implements Runnable {
 
     @SuppressWarnings("deprecation")
     public void ChangeStatus(DrawComponent p1, DrawComponent p2) {
-        //System.out.println("Change Status: " + p1 + " " + p2);
-        if (p2 == p3) {
-            JButton b = ((JButton) p3.getComponent(1));
-            b.setText("Ready!");
-            b.setEnabled(true);
-        }
+        //System.out.println("Change Status: " + p1 + " " + p2)
+
         Component[] c = frame.getContentPane().getComponents();
         for (Component i : c) {
             if (i == p1) {
@@ -343,6 +340,7 @@ class UserInterface implements Runnable {
             }
         }
         frame.add(p2);
+        p2.show();
         p2.interactive = true;
     }
 
@@ -439,7 +437,7 @@ class UserInterface implements Runnable {
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
 
-        timer = new Timer(1200, new ActionListener() {
+        timer = new Timer(600, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (data.status == 0) {
                     listModel.clear();
@@ -452,6 +450,19 @@ class UserInterface implements Runnable {
                         }
                     }
                     ChangeStatus(p4, p2);
+                    //System.out.println("fuck");
+                } else if (data.status == 3) {
+                    ChangeStatus(p3, p4);
+                } else if (data.status == 1 || data.status == 2) {
+                    ChangeStatus(p2, p3);
+                    JButton b = ((JButton) p3.getComponent(1));
+                    if (data.status == 1) {
+                        b.setText("Ready!");
+                        b.setEnabled(true);
+                    } else if (data.status == 2) {
+                        b.setText("<html><font color='grey'>Ready!</font></html>");
+                        b.setEnabled(false);
+                    }
                 }
             }
         });
@@ -480,7 +491,7 @@ class UserInterface implements Runnable {
                     try {
                         String S = new String(list.getSelectedValue().toCharArray());
                         int tmp = Integer.parseInt(S.split("#")[1]);
-                        ChangeStatus(p2, p3);
+                        //ChangeStatus(p2, p3);
                         //System.out.println(tmp);
                         try {
                             out.writeInt(tmp);
@@ -517,7 +528,7 @@ class UserInterface implements Runnable {
             @Override
             public void mousePressed(MouseEvent e) {
 
-                ChangeStatus(p2, p3);
+                //ChangeStatus(p2, p3);
                 try {
                     out.writeInt(-1);
                 } catch (IOException err) {
@@ -558,9 +569,6 @@ class UserInterface implements Runnable {
                     } else {
                         titleLabel.setText("<html>Player Count:  " + data.readyNumber + " / " + data.playerNumber + "</html>");
                     }
-                }
-                if (data.status == 3) {
-                    ChangeStatus(p3, p4);
                 }
             }
         });
