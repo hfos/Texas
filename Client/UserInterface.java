@@ -444,7 +444,7 @@ class UserInterface implements Runnable {
                             break;
                         }
                     }
-                    ChangeStatus(p4, p1);
+                    ChangeStatus(p4, p2);
                 }
             }
         });
