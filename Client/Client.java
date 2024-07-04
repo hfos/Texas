@@ -2,6 +2,7 @@ package Client;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Client {
 
@@ -152,6 +153,7 @@ public class Client {
     data.dealer = webReadInt();
     Card a = webReadCard(), b = webReadCard(), c = webReadCard(), d = webReadCard(), e = webReadCard();
     data.publicCards = new CardGroup5(a, b, c, d, e);
+    data.players = new CopyOnWriteArrayList<Player>();
     for (int i = 0; i < data.playerNumber; ++i) {
       data.players.add(new Player());
       data.players.get(i).c1 = webReadCard();
