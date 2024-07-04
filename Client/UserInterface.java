@@ -56,11 +56,12 @@ class DrawComponent extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+
+        super.paintComponent(g);
+
         if (!interactive) {
             return;
         }
-
-        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setFont(new Font(Font.SERIF, Font.BOLD, 120));
@@ -161,6 +162,9 @@ class GameComponent extends DrawComponent {
     public static java.util.List<Color> decorColor = Arrays.asList(Color.BLACK, Color.RED, Color.BLACK, Color.RED);
 
     public void paintPocker(Graphics2D g, Point p, Card c, boolean vis) {
+        if (c == null) {
+            return;
+        }
         p.x -= 27;
         p.y -= 43;
 
@@ -188,11 +192,12 @@ class GameComponent extends DrawComponent {
     @Override
     protected void paintComponent(Graphics g) {
 
+        super.paintComponent(g);
+
         if (!interactive) {
             return;
         }
 
-        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
@@ -431,6 +436,7 @@ class UserInterface implements Runnable {
                             break;
                         }
                     }
+                    ChangeStatus(p4, p1);
                 }
             }
         });
