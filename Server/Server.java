@@ -239,6 +239,10 @@ class Game {
       dealer = getNext(dealer);
     }
     sendGameEnd();
+    synchronized(Server.users){
+      for(Player p : players)
+        Server.users.add(p.u);
+    }
   }
   private void sendRoundBegin(){
     for(int i=0;i<n;++i) {
