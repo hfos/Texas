@@ -10,7 +10,6 @@ import java.util.*;
 
 import javax.swing.*;
 import javax.swing.Timer;
-import javax.xml.transform.Templates;
 
 class DrawComponent extends JPanel {
 
@@ -398,7 +397,6 @@ class UserInterface implements Runnable {
         layout.setConstraints(startButton, constraints);
 
         startButton.addMouseListener(new MouseAdapter() {
-            @SuppressWarnings("deprecation")
             @Override
             public void mousePressed(MouseEvent e) {
                 ChangeStatus(p1, p2);
