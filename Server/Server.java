@@ -51,41 +51,43 @@ public class Server {
     while(true){
       try{Thread.sleep(100);}catch(InterruptedException e){}
       Iterator<User> it = users.iterator();
-      while(it.hasNext()){
-        User user = it.next();
-        try{
-          int x=user.in.readInt();
-          if(x==0) {
-            user.sendStatus();
-            user.sendRoomList();
-            continue;
-          }
-          if(x==-1){
-            int roomKey = createRoom();
-            if(roomKey==-1){
-              System.err.println("fail to create room");
+      synchronized(users){
+        while(it.hasNext()){
+          User user = it.next();
+          try{
+            int x=user.in.readInt();
+            if(x==0) {
+              user.sendStatus();
+              user.sendRoomList();
               continue;
             }
-            user.out.writeInt(roomKey);
-            user.sendRoomList();
-            rooms.get(roomKey).add(user);
+            if(x==-1){
+              int roomKey = createRoom();
+              if(roomKey==-1){
+                System.err.println("fail to create room");
+                continue;
+              }
+              user.out.writeInt(roomKey);
+              user.sendRoomList();
+              rooms.get(roomKey).add(user);
+              it.remove();
+              continue;
+            }
+            if(!rooms.containsKey(x)){
+              System.err.println("A user tries to visit invalid room");
+              System.err.println("User: "+user);
+              System.err.println("Room: "+x);
+              continue;
+            }
+            rooms.get(x).add(user);
             it.remove();
-            continue;
+            user.sendStatus();
+            user.sendRoomList();
+          } catch(IOException e){
+            it.remove();
+            System.out.println("Client disconnected");
+          } catch(IllegalStateException e){
           }
-          if(!rooms.containsKey(x)){
-            System.err.println("A user tries to visit invalid room");
-            System.err.println("User: "+user);
-            System.err.println("Room: "+x);
-            continue;
-          }
-          rooms.get(x).add(user);
-          it.remove();
-          user.sendStatus();
-          user.sendRoomList();
-        } catch(IOException e){
-          it.remove();
-          System.out.println("Client disconnected");
-        } catch(IllegalStateException e){
         }
       }
     }
