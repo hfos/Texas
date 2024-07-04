@@ -163,21 +163,21 @@ class Room {
         while(it.hasNext()){
           User user = it.next();
           try{
-            int x=user.in.readInt();
-            if(x!=roomId) {
-              Server.users.add(user);
-              user.enterHall();
-              it.remove();
-              continue;
-            }
+            user.in.readInt();
             int y=user.in.readInt();
             if(y==2) {user.Ready(); ++ready_num;}
             else {user.enterRoom();}
+          } catch(IOException e){
+          }
+        }
+        it = users.iterator();
+        while(it.hasNext()){
+          User user = it.next();
+          try{
             user.sendStatus();
             user.out.writeInt(num);
             user.out.writeInt(ready_num);
           } catch(IOException e){
-            it.remove();
           }
         }
         if(ready_num>=num&&num>1){
