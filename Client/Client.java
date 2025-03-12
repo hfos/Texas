@@ -6,8 +6,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Client {
 
-  final static String SERVER_IP = "43.143.223.49";
-  final static int SERVER_PORT = 8848;
+  final static String SERVER_IP = "8.148.23.140";
+  final static int SERVER_PORT = 2222;
   static Socket socket;
   static DataOutputStream webOut;
   static DataInputStream webIn;

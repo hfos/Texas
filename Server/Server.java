@@ -4,7 +4,7 @@ import java.net.*;
 import java.util.*;
 
 public class Server {
-  final static int PORT = 8848;
+  final static int PORT = 2222;
   final static int MAX_ROOMS = 100;
   static ServerSocket serverSocket;
   volatile static Set<User> users = Collections.synchronizedSet(new HashSet<User>());
