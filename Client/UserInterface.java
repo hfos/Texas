@@ -301,9 +301,13 @@ class UserInterface implements Runnable {
         out = new DataOutputStream(pipe);
 
         p1 = initializeUI1();
+        p1.setName("p1");
         p2 = initializeUI2();
+        p2.setName("p2");
         p3 = initializeUI3();
+        p3.setName("p3");
         p4 = initializeUI4();
+        p4.setName("p4");
     }
 
     public int calculateMaxBet() {
@@ -325,16 +329,16 @@ class UserInterface implements Runnable {
 
         Component[] c = frame.getContentPane().getComponents();
         for (Component i : c) {
-            if (i == p1) {
-                p1.interactive = false;
-                p1.hide();
-                frame.remove(p1);
+            if (i.getName() != null && i.getName().equals(p1.getName())) {
+                ((DrawComponent) i).interactive = false;
+                i.hide();
+                frame.remove(i);
             }
         }
 
         for (Component i : c) {
-            if (i == p2) {
-                //System.out.println("Already in p2");
+            if (i.getName() != null && i.getName().equals(p2.getName())) {
+                // System.out.println("Already in p2");
                 return;
             }
         }
@@ -446,6 +450,12 @@ class UserInterface implements Runnable {
                             listModel.addElement("Room #" + t);
                         } catch (IndexOutOfBoundsException err) {
                             break;
+                        }
+                    }
+                    Component[] c = frame.getContentPane().getComponents();
+                    for (Component i : c) {
+                        if (i.getName() != null && i.getName().equals("p1")) {
+                            return;
                         }
                     }
                     ChangeStatus(p4, p2);
